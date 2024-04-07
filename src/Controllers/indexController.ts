@@ -9,5 +9,15 @@ class controller {
         console.log(req.body.notas)
         res.json({ message: 'Metodo Post' })
     }
+    public Analizar(req: Request, res: Response) {
+        try {
+            let parser = require('./analizador.js')
+            let resultado = parser.parse(req.body.texto)
+            res.json({ message: resultado })
+        } catch (e: any) {
+            res.json({ message: "Error" })
+            console.log(e)
+        }
+    }
 }
 export const indexController = new controller()
