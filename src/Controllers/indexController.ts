@@ -1,23 +1,34 @@
-import {Request, Response} from 'express'
+import { Request, Response } from 'express';
+import Arbol from './analisis/simbolo/Arbol';
+import tablaSimbolo from './analisis/simbolo/tablaSimbolos';
+
 
 class controller {
     public prueba(req: Request, res: Response) {
-        res.json('Hello World')
+        res.json({ "funciona": "la api" });
     }
-    public metodoPost(req: Request, res: Response) {
-        console.log(req.body)
-        console.log(req.body.notas)
-        res.json({ message: 'Metodo Post' })
-    }
-    public Analizar(req: Request, res: Response) {
+
+    public interpretar(req: Request, res: Response) {
         try {
-            let parser = require('./analizador.js')
-            let resultado = parser.parse(req.body.texto)
-            res.json({ message: resultado })
-        } catch (e: any) {
-            res.json({ message: "Error" })
-            console.log(e)
+            let parser = require('./analisis/analizador')
+            let ast = new Arbol(parser.parse(req.body.entrada))
+            let tabla = new tablaSimbolo()
+            tabla.setNombre("Ejemplo1")
+            ast.setTablaGlobal(tabla)
+            ast.setConsola("")
+            for (let i of ast.getInstrucciones()) {
+                console.log(i)
+                var resultado = i.interpretar(ast, tabla)
+                console.log(resultado)
+            }
+            res.send({ "Respuesta": "Si sale compi1" })
+        } catch (err: any) {
+            console.log(err)
+            res.send({ "Error": "Ya no sale compi1" })
         }
     }
+
 }
-export const indexController = new controller()
+
+
+export const indexController = new controller();

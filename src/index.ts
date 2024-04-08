@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import indexRouter from './Routes/indexRouter';
+import indexRouter from './Routes/routes';
 
 class servidor {
     public app: Application;

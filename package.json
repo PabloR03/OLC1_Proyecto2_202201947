@@ -8,7 +8,7 @@
     "build": "tsc -w",
     "start": "nodemon build/index.js",
     "server": "node build/index.js",
-    "jison": "jison src/Controllers/analizador.jison && move analizador.js build/Controllers"
+    "jison": "jison src/Controllers/analisis/analizador.jison && move analizador.js build/Controllers/analisis"
   },
   "keywords": [],
   "author": "",
