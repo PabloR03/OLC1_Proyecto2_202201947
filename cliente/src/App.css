@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-color: rgb(5, 75, 92); /* Cambia "blue" al color que desees */
+  color: white; /* Cambia "white" al color de texto que desees */
 }
 
 .App-logo {
@@ -25,7 +27,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #0a6c87;
 }
 
 @keyframes App-logo-spin {
