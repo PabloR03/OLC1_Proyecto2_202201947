@@ -15,6 +15,10 @@ export default class Arbol {
         this.errores = new Array<Errores>
     }
 
+    public Print(contenido: any) {
+        this.consola = `${this.consola}${contenido}\n`;
+    }
+
     public getConsola(): string {
         return this.consola
     }
@@ -38,7 +42,7 @@ export default class Arbol {
     public setTablaGlobal(tabla: tablaSimbolo) {
         this.tablaGlobal = tabla
     }
-    
+
     public getErrores(): any {
         return this.errores
     }

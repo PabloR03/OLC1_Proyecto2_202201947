@@ -1,33 +1,38 @@
-import tipo from './Tipo';
-export default class Simbolo{
-    private tipo: tipo;
-    private id: string;
-    private valor: any;
+import Tipo from './Tipo'
 
-    constructor(tipo: tipo, id: string, valor: any){
-        this.tipo = tipo;
-        this.id = id;
-        this.valor = valor;
-    }
+export default class Simbolo {
+    private tipo: Tipo
+    private id: string
+    private valor: any
 
-    public getTipo(): tipo{
-        return this.tipo;
-    }
-    public setTipo(tipo: tipo){
-        this.tipo = tipo;
+    constructor(tipo: Tipo, id: string, valor?: any) {
+        this.tipo = tipo
+        this.id = id.toLocaleLowerCase()
+        this.valor = valor
     }
 
-    public getId(): string{
-        return this.id;
-    }
-    public setId(id: string){
-        this.id = id;
+    public getTipo(): Tipo {
+        return this.tipo
     }
 
-    public getValor(): any{
-        return this.valor;
+    public setTipo(tipo: Tipo) {
+        this.tipo = tipo
     }
-    public setValor(valor: any){
-        this.valor = valor;
+
+    public getId() {
+        return this.id
     }
+
+    public setId(id: string) {
+        this.id = id
+    }
+
+    public getValor() {
+        return this.valor
+    }
+
+    public setValor(valor: any) {
+        this.valor = valor
+    }
+
 }

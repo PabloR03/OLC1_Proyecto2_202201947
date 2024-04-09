@@ -1,20 +1,24 @@
-export default class Tipo{
-    private tipo: tipoDato;
+export default class Tipo {
+    private tipo: tipoDato
 
-    constructor(tipo: tipoDato){
-        this.tipo = tipo;
+    constructor(tipo: tipoDato) {
+        this.tipo = tipo
     }
-    public setTipo(tipo: tipoDato){
-        this.tipo = tipo;
+
+    public setTipo(tipo: tipoDato) {
+        this.tipo = tipo
     }
-    public getTipo(): tipoDato{
-        return this.tipo;
+
+    public getTipo() {
+        return this.tipo
     }
+
 }
-export enum tipoDato{
+
+export enum tipoDato {
     ENTERO,
     DECIMAL,
-    BOOLEANO,
+    BOOL,
     CARACTER,
     CADENA,
     VOID

@@ -19,11 +19,12 @@ class controller {
             ast.setTablaGlobal(tabla);
             ast.setConsola("");
             for (let i of ast.getInstrucciones()) {
-                console.log(i);
+                //console.log(i)
                 var resultado = i.interpretar(ast, tabla);
-                console.log(resultado);
+                //console.log(resultado)
             }
-            res.send({ "Respuesta": "Si sale compi1" });
+            console.log(tabla);
+            res.send({ "Respuesta": ast.getConsola() });
         }
         catch (err) {
             console.log(err);
