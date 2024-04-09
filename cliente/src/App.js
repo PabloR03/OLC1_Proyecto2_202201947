@@ -1,23 +1,83 @@
-import logo from './logo.svg';
+import { useEffect, useState, useRef } from "react"
 import './App.css';
+import Editor from '@monaco-editor/react';
 
 function App() {
+  const editorRef = useRef(null);
+  const consolaRef = useRef(null);
+
+  function handleEditorDidMount(editor, id) {
+    if (id === "editor") {
+      editorRef.current = editor;
+    } else if (id === "consola") {
+      consolaRef.current = editor;
+    }
+  }
+
+
+  function interpretar() {
+    var entrada = editorRef.current.getValue();
+    fetch('http://localhost:4000/interpretar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ entrada: entrada }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        consolaRef.current.setValue(data.Respuesta);
+      })
+      .catch((error) => {
+        alert("Ya no sale comp1")
+        console.error('Error:', error);
+      });
+  }
+
+  const CargarArchivo = (event) => {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      var contents = event.target.result;
+      editorRef.current.setValue(contents);
+    };
+    reader.readAsText(file);
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div class='text-center'>
+        <h1>Proyecto 2 - OLC1</h1>
+      </div>
+      <br></br>
+      <div class='text-center'>
+        <div class="container">
+          <div class="row">
+            <input type="file" id="file" class="form-control form-control-lg" onChange={CargarArchivo} />
+          </div>
+          <br></br>
+          <div class="row">
+            <input type="button" value="Interpretar" id="btnCargar" class="form-control form-control-lg" onClick={interpretar} />
+          </div>
+        </div>
+      </div>
+      <br></br>
+      <div class='text-center style={{ height: "80%", width: "80%" }} '>
+        <div class="container" >
+          <div class="row">
+            <div class="col">
+              <p>Entrada</p>
+              <Editor height="90vh" defaultLanguage="java" defaultValue="" theme="vs-dark" onMount={(editor) => handleEditorDidMount(editor, "editor")} />
+            </div>
+            <div class="col">
+              <p>Consola</p>
+              <Editor height="90vh" defaultLanguage="cpp" defaultValue="" theme="vs-dark" options={{ readOnly: true }} onMount={(editor) => handleEditorDidMount(editor, "consola")} />
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
