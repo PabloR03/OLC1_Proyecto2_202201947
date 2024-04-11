@@ -11,4 +11,19 @@ export default class Errores{
         this.columna = columna;
     }
 
+    public getTipoError(): string{
+        return this.tipoErrpr;
+    }
+
+    public getDescripcion(): string{
+        return this.descripcion;
+    }
+
+    public getFila(): number{
+        return this.fila;
+    }
+
+    public getColumna(): number{
+        return this.columna;
+    }
 }
