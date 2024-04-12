@@ -23,7 +23,7 @@ export default class Declaracion extends Instruccion {
             }else{
                 valor_variable = this.valor.interpretar(arbol, tabla)
                 if (valor_variable instanceof Errores) return valor_variable
-                if ((valor_variable.toLowerCase()  == "true" || valor_variable.toLowerCase()  == "false") && this.tipoDato.getTipo() == tipoDato.ENTERO) {
+                if ((valor_variable == "true" || valor_variable  == "false") && this.tipoDato.getTipo() == tipoDato.ENTERO) {
                     valor_variable = valor_variable.toLowerCase() == "true" ? 1 : 0;
                 }else if (this.valor.tipoDato.getTipo() != this.tipoDato.getTipo()) {
                     return new Errores("SEMANTICO", "Error Al Declarar Variable.", this.linea, this.col)

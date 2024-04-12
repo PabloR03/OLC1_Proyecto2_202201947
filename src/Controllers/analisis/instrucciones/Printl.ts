@@ -4,7 +4,7 @@ import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Errores from "../excepciones/Errores";
 
-export default class Print extends Instruccion {
+export default class Printl extends Instruccion {
     private expresion: Instruccion
 
     constructor(exp: Instruccion, linea: number, col: number) {
@@ -15,6 +15,6 @@ export default class Print extends Instruccion {
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
         let valor = this.expresion.interpretar(arbol, tabla)
         if (valor instanceof Errores) return valor
-        arbol.Print(valor)
+        arbol.Printl(valor)
     }
 } 

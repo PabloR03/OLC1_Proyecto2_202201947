@@ -1,10 +1,11 @@
 %{
-    const Tipo               = require('./simbolo/Tipo')
-    const Nativo             = require('./expresiones/Nativo')
-    const Aritmeticas        = require('./expresiones/Aritmetica')
-    const AccesoVar          = require('./expresiones/AccesoVar')
-    const Declaracion        = require('./instrucciones/Declaracion')
-    const Print               = require('./instrucciones/Print')
+const Tipo               = require('./simbolo/Tipo')
+const Nativo             = require('./expresiones/Nativo')
+const Aritmeticas        = require('./expresiones/Aritmetica')
+const AccesoVar          = require('./expresiones/AccesoVar')
+const Declaracion        = require('./instrucciones/Declaracion')
+const Print              = require('./instrucciones/Print')
+const Printl             = require('./instrucciones/Printl')
 %}
 
 
@@ -43,7 +44,8 @@
 "+"                         return 'MAS'
 "-"                         return 'MENOS'
 "*"                         return 'MULTICACION'
-"/"                         return 'DIVISION'
+"/"                         return 'DIV'
+"pow"                       return 'POW'
 "%"                         return 'MODULO'
 
 "=="                        return 'IGUALIGUAL'
@@ -76,7 +78,14 @@
 /lex
 
 // precedencias
+%left 'OR'
+%left 'AND'
+%right 'EXCLAMA'
+%left 'IGUALIGUAL' 'DISTINTO' 'MENORQUE' 'MENORIGUAL' 'MAYORQUE' 'MAYORIGUAL'
 %left 'MAS' 'MENOS'
+%left 'DIV' 'MULTICACION' 'MODULO'
+%right 'pow'
+%right 'UMENOS'
 %start inicio
 %%
 inicio : instrucciones EOF                  { return $1; };
@@ -98,7 +107,7 @@ nombre_var : nombre_var COMA ID { $$=$1.push($3); $$=$1; }
 ;
 
 print :   COUT MENORQUE MENORQUE expresion PYC { $$= new Print.default($4, @1.first_line, @1.first_column); }
-        | COUT MENORQUE MENORQUE expresion MENORQUE MENORQUE ENDL PYC { $$= new Print.default($4, @1.first_line, @1.first_column); }
+        | COUT MENORQUE MENORQUE expresion MENORQUE MENORQUE ENDL PYC { $$= new Printl.default($4, @1.first_line, @1.first_column); }
 ;
 
 expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.ENTERO), $1, @1.first_line, @1.first_column); }
@@ -108,7 +117,13 @@ expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.
                 | TRUE     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOLEANO), $1, @1.first_line, @1.first_column);  }
                 | FALSE    { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOLEANO), $1, @1.first_line, @1.first_column);  }
                 | ID       { $$ = new AccesoVar.default($1, @1.first_line, @1.first_column); } 
+                | MENOS expresion %prec UMENOS { $$ = new Aritmeticas.default(Aritmeticas.Operadores.NEGATIVO, @1.first_line, @1.first_column, $2, null); }
                 | expresion MAS expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.SUMA, @1.first_line, @1.first_column, $1, $3); }
+                | expresion DIV expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.DIVISION, @1.first_line, @1.first_column, $1, $3); }
+                | expresion MENOS expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.RESTA, @1.first_line, @1.first_column, $1, $3); }
+                | expresion MULTICACION expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.MULTIPLICACION, @1.first_line, @1.first_column, $1, $3); }
+                | POW PARENTESISIZQ expresion COMA expresion PARENTESISDER { $$ = new Aritmeticas.default(Aritmeticas.Operadores.POTENCIA, @1.first_line, @1.first_column, $3, $5); }
+                | expresion MODULO expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.MODULO, @1.first_line, @1.first_column, $1, $3); } 
 ;
 
 

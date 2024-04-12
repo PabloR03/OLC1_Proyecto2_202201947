@@ -16,6 +16,10 @@ export default class Arbol {
     }
 
     public Print(contenido: any) {
+        this.consola = `${this.consola}${contenido}`;
+    }
+
+    public Printl(contenido: any) {
         this.consola = `${this.consola}${contenido}\n`;
     }
 
