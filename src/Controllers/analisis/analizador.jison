@@ -1,11 +1,12 @@
 %{
-const Tipo               = require('./simbolo/Tipo')
-const Nativo             = require('./expresiones/Nativo')
-const Aritmeticas        = require('./expresiones/Aritmetica')
-const AccesoVar          = require('./expresiones/AccesoVar')
-const Declaracion        = require('./instrucciones/Declaracion')
-const Print              = require('./instrucciones/Print')
-const Printl             = require('./instrucciones/Printl')
+const Tipo                      = require('./simbolo/Tipo')
+const Nativo                    = require('./expresiones/Nativo')
+const Aritmeticas               = require('./expresiones/Aritmetica')
+const AccesoVar                 = require('./expresiones/AccesoVar')
+const Declaracion               = require('./instrucciones/Declaracion')
+const Print                     = require('./instrucciones/Print')
+const Printl                    = require('./instrucciones/Printl')
+const OperadoresRelacionales    =require('./expresiones/OperadoresRelacionales')
 %}
 
 
@@ -30,14 +31,12 @@ const Printl             = require('./instrucciones/Printl')
 
 "["                         return 'CORCHETEIZQ'
 "]"                         return 'CORCHETEDER'
-"="                         return 'IGUAL'
 "("                         return 'PARENTESISIZQ'
 ")"                         return 'PARENTESISDER'
 "{"                         return 'LLAVEDER'
 "}"                         return 'LLAVEIZQ'
 ";"                         return 'PYC'
 "?"                         return 'INTERRO'
-"!"                         return 'EXCLAMA'
 ":"                         return 'DPUNTOS'
 ","                         return 'COMA'
 
@@ -49,11 +48,14 @@ const Printl             = require('./instrucciones/Printl')
 "%"                         return 'MODULO'
 
 "=="                        return 'IGUALIGUAL'
+"="                         return 'IGUAL'
 "!="                        return 'DISTINTO'
+"!"                         return 'EXCLAMA'
+"<="                        return 'MENORIGUAL'
+">="                        return 'MAYORIGUAL'
 "<"                         return 'MENORQUE'
 ">"                         return 'MAYORQUE'
-"<="                        return 'MENORIGUAL'
-"=>"                        return 'MAYORIGUAL'
+
 
 "||"                        return 'OR'
 "&&"                        return 'AND'
@@ -114,8 +116,8 @@ expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.
                 | DECIMAL  { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.DECIMAL), $1, @1.first_line, @1.first_column); }
                 | CARACTER { var text = $1.substr(0,$1.length); text = text.replace(/\\n/g, "\n"); text = text.replace(/\\\\/g, "\\"); text = text.replace(/\\\"/g,"\""); text = text.replace(/\\r/g, "\r"); text = text.replace(/\\t/g, "\t"); text = text.replace(/\\\'/g, "'"); $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CARACTER), text, @1.first_line, @1.first_column); }
                 | CADENA   { var text = $1.substr(0,$1.length); text = text.replace(/\\n/g, "\n"); text = text.replace(/\\\\/g, "\\"); text = text.replace(/\\\"/g,"\""); text = text.replace(/\\r/g, "\r"); text = text.replace(/\\t/g, "\t"); text = text.replace(/\\\'/g, "'"); $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CADENA), text, @1.first_line, @1.first_column); }
-                | TRUE     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOLEANO), $1, @1.first_line, @1.first_column);  }
-                | FALSE    { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOLEANO), $1, @1.first_line, @1.first_column);  }
+                | TRUE     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), true, @1.first_line, @1.first_column);  }
+                | FALSE    { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), false, @1.first_line, @1.first_column);  }
                 | ID       { $$ = new AccesoVar.default($1, @1.first_line, @1.first_column); } 
                 | MENOS expresion %prec UMENOS { $$ = new Aritmeticas.default(Aritmeticas.Operadores.NEGATIVO, @1.first_line, @1.first_column, $2, null); }
                 | expresion MAS expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.SUMA, @1.first_line, @1.first_column, $1, $3); }
@@ -124,12 +126,19 @@ expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.
                 | expresion MULTICACION expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.MULTIPLICACION, @1.first_line, @1.first_column, $1, $3); }
                 | POW PARENTESISIZQ expresion COMA expresion PARENTESISDER { $$ = new Aritmeticas.default(Aritmeticas.Operadores.POTENCIA, @1.first_line, @1.first_column, $3, $5); }
                 | expresion MODULO expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.MODULO, @1.first_line, @1.first_column, $1, $3); } 
+                | expresion MENORQUE expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.MENORQUE, @1.first_line, @1.first_column, $1, $3); }
+                | expresion MAYORQUE expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.MAYORQUE, @1.first_line, @1.first_column, $1, $3); }
+                | expresion MENORIGUAL expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.MENORIGUAL, @1.first_line, @1.first_column, $1, $3); }
+                | expresion IGUALIGUAL expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.IGUALIGUAL, @1.first_line, @1.first_column, $1, $3); }
+                | expresion DISTINTO expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.DISTINTO, @1.first_line, @1.first_column, $1, $3); }
+                | expresion MAYORIGUAL expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.MAYORIGUAL, @1.first_line, @1.first_column, $1, $3); }
+                | PARENTESISIZQ expresion PARENTESISDER {$$ = $2;}
 ;
 
 
 tipoDato : INT   { $$ = new Tipo.default(Tipo.tipoDato.ENTERO); }
         | DOUBLE { $$ = new Tipo.default(Tipo.tipoDato.DECIMAL); }
         | CHAR   { $$ = new Tipo.default(Tipo.tipoDato.CARACTER); }
-        | BOOL   { $$ = new Tipo.default(Tipo.tipoDato.BOOLEANO); }
+        | BOOL   { $$ = new Tipo.default(Tipo.tipoDato.BOOL); }
         | STRING { $$ = new Tipo.default(Tipo.tipoDato.CADENA); }
 ;

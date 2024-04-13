@@ -96,7 +96,7 @@ export default class Aritmeticas extends Instruccion {
         }
     }
 
-    multiplicacion(op1: any, op2: any) {
+    multiplicacion(valor_izquierda: any, valor_derecha: any) {
         let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
         let tipo2 = this.operando_derecha?.tipoDato.getTipo()
         switch (tipo1) {
@@ -105,13 +105,13 @@ export default class Aritmeticas extends Instruccion {
                 switch (tipo2) {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(op1) * parseInt(op2)
+                        return parseInt(valor_izquierda) * parseInt(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(op1) * parseFloat(op2)).toFixed(2)
+                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
                     case tipoDato.CARACTER:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(op1) * parseInt(op2.charCodeAt(0))
+                        return parseInt(valor_izquierda) * parseInt(valor_derecha.charCodeAt(0))
                     default:
                         return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
                 }
@@ -120,13 +120,13 @@ export default class Aritmeticas extends Instruccion {
                 switch (tipo2) {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(op1) * parseFloat(op2)).toFixed(2)
+                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(op1) * parseFloat(op2)).toFixed(2)
+                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
                     case tipoDato.CARACTER:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(op1) * parseFloat(op2.charCodeAt(0))).toFixed(2)
+                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha.charCodeAt(0))).toFixed(2)
                     default:
                         return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
                 }
@@ -135,10 +135,10 @@ export default class Aritmeticas extends Instruccion {
                 switch (tipo2) {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(op1.charCodeAt(0)) * parseInt(op2)
+                        return parseInt(valor_izquierda.charCodeAt(0)) * parseInt(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(op1.charCodeAt(0)) * parseFloat(op2)).toFixed(2)
+                        return (parseFloat(valor_izquierda.charCodeAt(0)) * parseFloat(valor_derecha)).toFixed(2)
                     default:
                         return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
                 }

@@ -23,8 +23,8 @@ export default class Declaracion extends Instruccion {
             }else{
                 valor_variable = this.valor.interpretar(arbol, tabla)
                 if (valor_variable instanceof Errores) return valor_variable
-                if ((valor_variable == "true" || valor_variable  == "false") && this.tipoDato.getTipo() == tipoDato.ENTERO) {
-                    valor_variable = valor_variable.toLowerCase() == "true" ? 1 : 0;
+                if ((valor_variable == true || valor_variable  == false) && this.tipoDato.getTipo() == tipoDato.ENTERO) {
+                    valor_variable = valor_variable == true ? 1 : 0;
                 }else if (this.valor.tipoDato.getTipo() != this.tipoDato.getTipo()) {
                     return new Errores("SEMANTICO", "Error Al Declarar Variable.", this.linea, this.col)
                 }
@@ -43,11 +43,11 @@ export default class Declaracion extends Instruccion {
     private valor_defecto(tipo: Tipo): any {
         switch (tipo.getTipo()) {
             case tipoDato.ENTERO:
-                return "0"
+                return 0
             case tipoDato.DECIMAL:
-                return "0.0"
+                return 0
             case tipoDato.BOOL:
-                return 'true'
+                return true
             case tipoDato.CARACTER:
                 return ''
             case tipoDato.CADENA:
