@@ -7,18 +7,20 @@ import Tipo, { tipoDato } from "../simbolo/Tipo";
 export default class OperadorRelacional extends Instruccion {
     private operando_izquierda: Instruccion | undefined
     private operando_derecha: Instruccion | undefined
+    private operando_masderecha: Instruccion | undefined
     private operando_unico: Instruccion | undefined
     private operacion: OperadoresRelacionales
 
-    constructor(operador: OperadoresRelacionales, linea: number, col: number, valor_izquierda: Instruccion, valor_derecha?: Instruccion) {
+    constructor(operador: OperadoresRelacionales, linea: number, col: number, valor_izquierda: Instruccion, valor_derecha?: Instruccion, valor_masderecha?: Instruccion) {
         super(new Tipo(tipoDato.BOOL), linea, col)
         this.operacion = operador
         this.operando_izquierda = valor_izquierda
         this.operando_derecha = valor_derecha
+        this.operando_masderecha = valor_masderecha
     }
 
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
-        let valor_izquierda, valor_derecha, valor_unico = null
+        let valor_izquierda, valor_derecha, valor_unico = null, valor_masderecha
         if (this.operando_unico != null) {
             valor_unico = this.operando_unico.interpretar(arbol, tabla)
             if (valor_unico instanceof Errores) return valor_unico
@@ -27,6 +29,8 @@ export default class OperadorRelacional extends Instruccion {
             if (valor_izquierda instanceof Errores) return valor_izquierda
             valor_derecha = this.operando_derecha?.interpretar(arbol, tabla)
             if (valor_derecha instanceof Errores) return valor_derecha
+            valor_masderecha = this.operando_masderecha?.interpretar(arbol, tabla)
+            if (valor_masderecha instanceof Errores) return valor_masderecha
         }
 
         switch (this.operacion) {
@@ -42,6 +46,10 @@ export default class OperadorRelacional extends Instruccion {
                 return this.mayorque(valor_izquierda, valor_derecha)
             case OperadoresRelacionales.MAYORIGUAL:
                 return this.mayorigual(valor_izquierda, valor_derecha)
+            //case OperadoresRelacionales.TERNARIO:
+            //    return this.ternarios(valor_izquierda, valor_derecha)
+            //case OperadoresRelacionales.OPERARTERNARIO:
+            //    return this.operarternario(valor_izquierda, valor_derecha)
             default:
                 return new Errores("Semantico", "Operador Relacional Invalido", this.linea, this.col)
         }
@@ -1125,6 +1133,27 @@ export default class OperadorRelacional extends Instruccion {
         }
     }
 
+   // ternarios(valor_izquierda: any, valor_derecha:any) {
+   //     let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
+   //     let tipo2 = this.operando_derecha?.tipoDato.getTipo()
+   //     
+   //     if (valor_izquierda === true){
+   //         //llamo a la funcion ternariosresultado para que me devuelva el valor de la derecha//
+
+   //     }
+   //     if (valor_izquierda === false){
+   //         return valor_derecha
+   //     }
+   // }//
+
+   // operarternario(valor_izquierda: any, valor_derecha: any) {
+   //     if (valor_izquierda === true){
+   //         return valor_izquierda
+   //     }
+   //     if (valor_izquierda === false){
+   //         return valor_derecha
+   //     }
+//}
 }
 
 export enum OperadoresRelacionales {
@@ -1133,5 +1162,7 @@ export enum OperadoresRelacionales {
     MENORQUE,
     MENORIGUAL,
     MAYORQUE,
-    MAYORIGUAL
+    TERNARIO,
+    MAYORIGUAL,
+    OPERARTERNARIO
 }

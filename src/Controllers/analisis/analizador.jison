@@ -6,7 +6,8 @@ const AccesoVar                 = require('./expresiones/AccesoVar')
 const Declaracion               = require('./instrucciones/Declaracion')
 const Print                     = require('./instrucciones/Print')
 const Printl                    = require('./instrucciones/Printl')
-const OperadoresRelacionales    =require('./expresiones/OperadoresRelacionales')
+const OperadoresRelacionales    = require('./expresiones/OperadoresRelacionales')
+const OperadoresLogicos         = require('./expresiones/OperadoresLogicos')
 %}
 
 
@@ -98,6 +99,11 @@ instrucciones : instrucciones instruccion   { $1.push($2); $$=$1; }
 
 instruccion : declaracion_vars   { $$=$1; }
                 | print        { $$=$1; }
+//                | ternarios   { $$=$1; }
+;
+
+res_booleanas : TRUE     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), true, @1.first_line, @1.first_column);  }
+                | FALSE    { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), false, @1.first_line, @1.first_column);  }
 ;
 
 declaracion_vars : tipoDato nombre_var IGUAL expresion PYC { $$ = new Declaracion.default($1, @1.first_line, @1.first_column, $2, $4); } 
@@ -112,13 +118,19 @@ print :   COUT MENORQUE MENORQUE expresion PYC { $$= new Print.default($4, @1.fi
         | COUT MENORQUE MENORQUE expresion MENORQUE MENORQUE ENDL PYC { $$= new Printl.default($4, @1.first_line, @1.first_column); }
 ;
 
-expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.ENTERO), $1, @1.first_line, @1.first_column); }
+//ternarios : expresion INTERRO resultadoternario { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.TERNARIO, @1.first_line, @1.first_column, $1, null);}
+//;
+//
+//resultadoternario : expresion DPUNTOS expresion PYC { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.OPERARTERNARIO, @1.first_line, @1.first_column, $1, $3); }
+//;
+
+expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.ENTERO), $1, @1.first_line, @1.first_column); }
                 | DECIMAL  { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.DECIMAL), $1, @1.first_line, @1.first_column); }
                 | CARACTER { var text = $1.substr(0,$1.length); text = text.replace(/\\n/g, "\n"); text = text.replace(/\\\\/g, "\\"); text = text.replace(/\\\"/g,"\""); text = text.replace(/\\r/g, "\r"); text = text.replace(/\\t/g, "\t"); text = text.replace(/\\\'/g, "'"); $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CARACTER), text, @1.first_line, @1.first_column); }
                 | CADENA   { var text = $1.substr(0,$1.length); text = text.replace(/\\n/g, "\n"); text = text.replace(/\\\\/g, "\\"); text = text.replace(/\\\"/g,"\""); text = text.replace(/\\r/g, "\r"); text = text.replace(/\\t/g, "\t"); text = text.replace(/\\\'/g, "'"); $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CADENA), text, @1.first_line, @1.first_column); }
                 | TRUE     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), true, @1.first_line, @1.first_column);  }
                 | FALSE    { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), false, @1.first_line, @1.first_column);  }
-                | ID       { $$ = new AccesoVar.default($1, @1.first_line, @1.first_column); } 
+                | ID       { $$ = new AccesoVar.default($1, @1.first_line, @1.first_column); }
                 | MENOS expresion %prec UMENOS { $$ = new Aritmeticas.default(Aritmeticas.Operadores.NEGATIVO, @1.first_line, @1.first_column, $2, null); }
                 | expresion MAS expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.SUMA, @1.first_line, @1.first_column, $1, $3); }
                 | expresion DIV expresion  { $$ = new Aritmeticas.default(Aritmeticas.Operadores.DIVISION, @1.first_line, @1.first_column, $1, $3); }
@@ -133,6 +145,9 @@ expresion : ENTERO     { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.
                 | expresion DISTINTO expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.DISTINTO, @1.first_line, @1.first_column, $1, $3); }
                 | expresion MAYORIGUAL expresion { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.MAYORIGUAL, @1.first_line, @1.first_column, $1, $3); }
                 | PARENTESISIZQ expresion PARENTESISDER {$$ = $2;}
+                | expresion OR expresion       {$$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_OR, @1.first_line, @1.first_column, $1, $3);} 
+                | expresion AND expresion      {$$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_AND, @1.first_line, @1.first_column, $1, $3);} 
+                | EXCLAMA expresion     {$$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_NOT, @1.first_line, @1.first_column, $2);}
 ;
 
 
