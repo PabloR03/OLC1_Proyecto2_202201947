@@ -47,8 +47,60 @@ export default class Aritmeticas extends Instruccion {
                 return this.multiplicacion(valor_izquierda, valor_derecha)
             case Operadores.MODULO:
                 return this.modulo(valor_izquierda, valor_derecha)
+            case Operadores.CASTEO:
+                return this.casteo(valor_izquierda, valor_derecha)
             default:
                 return new Errores("Semantico", "Operador Aritmetico Invalido", this.linea, this.col)
+        }
+    }
+
+    casteo(valor_izquierda: any, valor_derecha: any) {
+        let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
+        let tipo2 = this.operando_derecha?.tipoDato.getTipo()
+        switch (tipo1) {
+            //ENTERO CON TODOS LOS DEMÁS
+            case tipoDato.ENTERO:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_derecha)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_derecha)
+                    case tipoDato.CADENA:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_derecha)
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_derecha.charCodeAt(0))
+                    default:
+                        return new Errores("Semántico", "Casteo de Entero Inválida", this.linea, this.col)
+                }
+            //DECIMAL CON TODOS LOS DEMÁS
+            case tipoDato.DECIMAL:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda)
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda)  
+                    default:
+                        return new Errores("Semántico", "Casteo de Double Inválida", this.linea, this.col)
+                }
+            case tipoDato.CARACTER:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.CARACTER)
+                        return valor_izquierda.charCodeAt(0)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.CARACTER)
+                        return parseFloat(valor_izquierda.charCodeAt(0))  
+                    default:
+                        return new Errores("Semántico", "Casteo de Double Inválida", this.linea, this.col)
+                }
+            default:
+                return new Errores("Semántico", "Operación Potencia Inválida", this.linea, this.col)
         }
     }
 
@@ -56,8 +108,10 @@ export default class Aritmeticas extends Instruccion {
         let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
         let tipo2 = this.operando_derecha?.tipoDato.getTipo()
         switch (tipo1) {
+            //ENTERO CON TODOS LOS DEMÁS
             case tipoDato.ENTERO:
-                switch (tipo2) {
+                switch (tipo2) 
+                {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
                         return parseInt(valor_izquierda) + parseInt(valor_derecha)
@@ -66,33 +120,209 @@ export default class Aritmeticas extends Instruccion {
                         return parseFloat(valor_izquierda) + parseFloat(valor_derecha)
                     case tipoDato.BOOL:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        if (valor_derecha.toLowerCase() === "true") {
+                        if (valor_derecha === true) {
                             return parseInt(valor_izquierda) + 1;
-                        } else if (valor_derecha.toLowerCase() === "false") {
+                        } else if (valor_derecha === false) {
                             return parseInt(valor_izquierda);
                         }
                     case tipoDato.CARACTER:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(valor_izquierda) + parseInt(valor_derecha)
+                        return parseInt(valor_izquierda) + valor_derecha.charCodeAt(0)
                     case tipoDato.CADENA:
                         this.tipoDato = new Tipo(tipoDato.CADENA)
-                        return valor_izquierda + valor_derecha
+                        return String(valor_izquierda + valor_derecha)
                     default:
-                        return new Errores("Semantico", "Suma Invalida", this.linea, this.col)
+                        return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
                 }
+            //DECIMAL CON TODOS LOS DEMÁS
             case tipoDato.DECIMAL:
-                switch (tipo2) {
+                switch (tipo2) 
+                {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
                         return parseFloat(valor_izquierda) + parseFloat(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
                         return parseFloat(valor_izquierda) + parseFloat(valor_derecha)
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        if (valor_derecha === true) {
+                            return parseFloat(valor_izquierda) + 1;
+                        } else if (valor_derecha === false) {
+                            return parseFloat(valor_izquierda);
+                        }
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda) + parseFloat(valor_derecha.charCodeAt(0))
+                    case tipoDato.CADENA:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
                     default:
-                        return new Errores("Semantico", "Suma Invalida", this.linea, this.col)
+                        return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
+                }
+            //BOOL CON TODOS LOS DEMÁS
+            case tipoDato.BOOL:
+                switch (tipo2) 
+                {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        if (valor_izquierda === true) {
+                            return parseInt(valor_derecha) + 1;
+                        } else if (valor_izquierda === false) {
+                            return parseInt(valor_derecha);
+                        }
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        if (valor_izquierda === true) {
+                            return parseFloat(valor_derecha) + 1;
+                        } else if (valor_izquierda=== false) {
+                            return parseFloat(valor_derecha);
+                        }
+                    case tipoDato.CADENA:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        if (valor_izquierda === true) {
+                            return String("true" + valor_derecha)
+                        } else if (valor_izquierda=== false) {
+                            return String("false" + valor_derecha)
+                        }
+                    default:
+                        return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
+                }
+            //CARACTER CON TODOS LOS DEMÁS
+            case tipoDato.CARACTER:
+                switch (tipo2) 
+                {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_izquierda.charCodeAt(0)) + parseInt(valor_derecha)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda.charCodeAt(0)) + parseFloat(valor_derecha)
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    case tipoDato.CADENA:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    default:
+                        return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
+                }
+            //CARACTER CON TODOS LOS DEMÁS
+            case tipoDato.CADENA:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        if (valor_derecha === true) {
+                            return String(valor_izquierda + "true")
+                        } else if (valor_derecha === false) {
+                            return String(valor_izquierda + "false")
+                        }
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    case tipoDato.CADENA:
+                        this.tipoDato = new Tipo(tipoDato.CADENA)
+                        return String(valor_izquierda + valor_derecha)
+                    default:
+                        return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
                 }
             default:
-                return new Errores("Semantico", "Suma Invalida", this.linea, this.col)
+                return new Errores("Semántico", "Operación Suma Inválida", this.linea, this.col)
+        }
+    }
+
+    resta(valor_izquierda: any, valor_derecha: any) {
+        let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
+        let tipo2 = this.operando_derecha?.tipoDato.getTipo()
+        switch (tipo1) {
+            case tipoDato.ENTERO:
+                //ENTERO CON TODOS LOS DEMÁS
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_izquierda) - parseInt(valor_derecha)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda) - parseFloat(valor_derecha)
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        if (valor_derecha === true) {
+                            return parseInt(valor_izquierda) - 1
+                        }
+                        else if (valor_derecha === false) {
+                            return parseInt(valor_izquierda) 
+                        }   
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return parseInt(valor_izquierda) - parseInt(valor_derecha.charCodeAt(0))
+                    default:
+                        return new Errores("Semántico", "Operación Resta Inválida", this.linea, this.col)
+                }
+            //DECIMAL CON TODOS LOS DEMÁS
+            case tipoDato.DECIMAL:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda) - parseFloat(valor_derecha)
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda) - parseFloat(valor_derecha)
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        if (valor_derecha === true) {
+                            return parseFloat(valor_izquierda) - 1
+                        }
+                        else if (valor_derecha === false) {
+                            return parseFloat(valor_izquierda) 
+                        }  
+                    case tipoDato.CARACTER:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return parseFloat(valor_izquierda) - parseFloat(valor_derecha.charCodeAt(0))
+                    default:
+                        return new Errores("Semántico", "Operación Resta Inválida", this.linea, this.col)
+                }
+            //BOOL CON TODOS LOS DEMÁS
+            case tipoDato.BOOL:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        if (valor_izquierda === true) {
+                            return 1 - parseInt(valor_derecha)
+                        }
+                        else if (valor_izquierda === false) {
+                            return 0 - parseInt(valor_derecha)
+                        }  
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        if (valor_izquierda === true) {
+                            return 1 - parseFloat(valor_derecha)
+                        }
+                        else if (valor_izquierda === false) {
+                            return 0 - parseFloat(valor_derecha)
+                        }  
+                    default:
+                        return new Errores("Semántico", "Operación Resta Inválida", this.linea, this.col)
+                }
+                //CARACTER CON TODOS LOS DEMÁS
+                case tipoDato.CARACTER:
+                    switch (tipo2) {
+                        case tipoDato.ENTERO:
+                            this.tipoDato = new Tipo(tipoDato.ENTERO)
+                            return parseInt(valor_izquierda.charCodeAt(0)) - parseInt(valor_derecha)
+                        case tipoDato.DECIMAL:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda.charCodeAt(0)) - parseFloat(valor_derecha)
+                        default:
+                            return new Errores("Semántico", "Operación Resta Inválida", this.linea, this.col)
+                }
+            default:
+                return new Errores("Semántico", "Operación Resta Inválida", this.linea, this.col)
         }
     }
 
@@ -100,7 +330,7 @@ export default class Aritmeticas extends Instruccion {
         let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
         let tipo2 = this.operando_derecha?.tipoDato.getTipo()
         switch (tipo1) {
-            //MULTIPLICACION CON ENTERO
+            //ENTERO CON TODOS LOS DEMÁS
             case tipoDato.ENTERO:
                 switch (tipo2) {
                     case tipoDato.ENTERO:
@@ -108,29 +338,29 @@ export default class Aritmeticas extends Instruccion {
                         return parseInt(valor_izquierda) * parseInt(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
+                        return parseFloat(valor_izquierda) * parseFloat(valor_derecha)
                     case tipoDato.CARACTER:
                         this.tipoDato = new Tipo(tipoDato.ENTERO)
                         return parseInt(valor_izquierda) * parseInt(valor_derecha.charCodeAt(0))
                     default:
-                        return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
+                        return new Errores("Semántico", "Operación Multiplicación Inválida", this.linea, this.col)
                 }
-            //MULTIPLICACION CON DECIMAL
+            //DECIMAL CON TODOS LOS DEMÁS
             case tipoDato.DECIMAL:
                 switch (tipo2) {
                     case tipoDato.ENTERO:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
+                        return parseFloat(valor_izquierda) * parseFloat(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha)).toFixed(2)
+                        return parseFloat(valor_izquierda) * parseFloat(valor_derecha)
                     case tipoDato.CARACTER:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) * parseFloat(valor_derecha.charCodeAt(0))).toFixed(2)
+                        return parseFloat(valor_izquierda) * parseFloat(valor_derecha.charCodeAt(0))
                     default:
-                        return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
+                        return new Errores("Semántico", "Operación Multiplicación Inválida", this.linea, this.col)
                 }
-            //MULTIPLICACION CON CARACTER
+            //DECIMAL CON TODOS LOS DEMÁS
             case tipoDato.CARACTER:
                 switch (tipo2) {
                     case tipoDato.ENTERO:
@@ -138,196 +368,76 @@ export default class Aritmeticas extends Instruccion {
                         return parseInt(valor_izquierda.charCodeAt(0)) * parseInt(valor_derecha)
                     case tipoDato.DECIMAL:
                         this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda.charCodeAt(0)) * parseFloat(valor_derecha)).toFixed(2)
+                        return parseFloat(valor_izquierda.charCodeAt(0)) * parseFloat(valor_derecha)
                     default:
-                        return new Errores("Semantico", "Multiplicación Invalida", this.linea, this.col)
+                        return new Errores("Semántico", "Operación Multiplicación Inválida", this.linea, this.col)
                 }
             default:
-                return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
+                return new Errores("Semántico", "Operación Multiplicación Inválida", this.linea, this.col)
         }
-
     }
-
-
-    resta(valor_izquierda: any, valor_derecha: any) {
-        let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
-        let tipo2 = this.operando_derecha?.tipoDato.getTipo()
-        switch (tipo1) {
-            //RESTAS CON ENTERO
-            case tipoDato.ENTERO:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(valor_izquierda) - parseInt(valor_derecha)
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) - parseFloat(valor_derecha)).toFixed(2)
-                    case tipoDato.BOOL:
-                        this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        if (valor_derecha.toLowerCase() === "true") {
-                            return parseInt(valor_izquierda) - 1
-                        }
-                        else if (valor_derecha.toLowerCase() === "false") {
-                            return parseInt(valor_izquierda) 
-                        }   
-                    case tipoDato.CARACTER:
-                        this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return parseInt(valor_izquierda) - parseInt(valor_derecha)
-                    default:
-                        return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
-                }
-            // RESTAS CON DECIMAL
-            case tipoDato.DECIMAL:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) - parseFloat(valor_derecha)).toFixed(2)
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) - parseFloat(valor_derecha)).toFixed(2)
-                    case tipoDato.BOOL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        if (valor_derecha.toLowerCase() === "true") {
-                            return (parseFloat(valor_izquierda) - 1).toFixed(2)
-                        }
-                        else if (valor_derecha.toLowerCase() === "false") {
-                            return parseFloat(valor_izquierda) 
-                        }  
-                    case tipoDato.CARACTER:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return (parseFloat(valor_izquierda) - parseFloat(valor_derecha)).toFixed(2)
-                    default:
-                        return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
-                }
-            // RESTAS CON BOOLEANO
-            case tipoDato.BOOL:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        if (valor_izquierda.toLowerCase() === "true") {
-                            return 1 - parseInt(valor_derecha)
-                        }
-                        else if (valor_izquierda.toLowerCase() === "false") {
-                            return 0 - parseInt(valor_derecha)
-                        }  
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        if (valor_izquierda.toLowerCase() === "true") {
-                            return (1 - parseFloat(valor_derecha)).toFixed(2)
-                        }
-                        else if (valor_izquierda.toLowerCase() === "false") {
-                            return (0 - parseFloat(valor_derecha)).toFixed(2)
-                        }  
-                    default:
-                        return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
-                }
-                //RESTAS CON CARACTER
-                case tipoDato.CARACTER:
-                    switch (tipo2) {
-                        case tipoDato.ENTERO:
-                            this.tipoDato = new Tipo(tipoDato.ENTERO)
-                            return parseInt(valor_izquierda) - parseInt(valor_derecha)
-                        case tipoDato.DECIMAL:
-                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                            return (parseFloat(valor_izquierda) - parseFloat(valor_derecha)).toFixed(2)
-                        default:
-                            return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
-                }
-            default:
-                return new Errores("Semantico", "Resta Invalida", this.linea, this.col)
-        }
-
-    }
-
+    
     division(valor_izquierda: any, valor_derecha: any) {
         let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
         let tipo2 = this.operando_derecha?.tipoDato.getTipo()
         if (parseFloat(valor_derecha) === 0) {
-            return "no se puede dividir entre 0"
+            return new Errores("Semántico", "Operación División Invalida", this.linea, this.col)
         }
         else {
-        switch (tipo1) {
-            case tipoDato.ENTERO:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    case tipoDato.CARACTER:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    default:
-                        return new Errores("Semantico", "Division Invalida", this.linea, this.col)
-                }
-            case tipoDato.DECIMAL:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    case tipoDato.CARACTER:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
-                    default:
-                        return new Errores("Semantico", "Division Invalida", this.linea, this.col)
-                }
-            case tipoDato.CARACTER:
-            switch (tipo2) {
+            switch (tipo1) {
+                //ENTERO CON TODOS LOS DEMÁS
                 case tipoDato.ENTERO:
-                    this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                    return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                    switch (tipo2) {
+                        case tipoDato.ENTERO:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                        case tipoDato.DECIMAL:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                        case tipoDato.CARACTER:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha.charCodeAt(0))
+                        default:
+                            return new Errores("Semántico", "Operación División Invalida", this.linea, this.col)
+                    }
+                //DECIMAL CON TODOS LOS DEMÁS
                 case tipoDato.DECIMAL:
-                    this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                    return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                    switch (tipo2) {
+                        case tipoDato.ENTERO:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                        case tipoDato.DECIMAL:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha)
+                        case tipoDato.CARACTER:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda) / parseFloat(valor_derecha.charCodeAt(0))
+                        default:
+                            return new Errores("Semántico", "Operación División Invalida", this.linea, this.col)
+                    }
+                //CARACTER CON TODOS LOS DEMÁS
+                case tipoDato.CARACTER:
+                    switch (tipo2) {
+                        case tipoDato.ENTERO:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda.charCodeAt(0)) / parseFloat(valor_derecha)
+                        case tipoDato.DECIMAL:
+                            this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                            return parseFloat(valor_izquierda.charCodeAt(0)) / parseFloat(valor_derecha)
+                        default:
+                            return new Errores("Semántico", "Operación División Invalida", this.linea, this.col)
+                    }
                 default:
-                    return new Errores("Semantico", "Division Invalida", this.linea, this.col)
+                    return new Errores("Semántico", "Operación División Invalida", this.linea, this.col)
             }
-            default:
-                return new Errores("Semantico", "Division Invalida", this.linea, this.col)
         }
-    }
     }
 
-    potencia(valor_izquierda: any, valor_derecha: any) {
-        let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
-        let tipo2 = this.operando_derecha?.tipoDato.getTipo()
-        switch (tipo1) {
-            case tipoDato.ENTERO:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.ENTERO)
-                        return Math.pow(parseInt(valor_izquierda), parseInt(valor_derecha))
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
-                    default:
-                        return new Errores("Semantico", "Potencia Invalida", this.linea, this.col)
-                }
-            case tipoDato.DECIMAL:
-                switch (tipo2) {
-                    case tipoDato.ENTERO:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
-                    case tipoDato.DECIMAL:
-                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
-                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
-                    default:
-                        return new Errores("Semantico", "Potencia Invalida", this.linea, this.col)
-                }
-            default:
-                return new Errores("Semantico", "Potencia Invalida", this.linea, this.col)
-        }
-    }
-            
     modulo(valor_izquierda: any, valor_derecha: any) {
         let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
         let tipo2 = this.operando_derecha?.tipoDato.getTipo()
         if (parseFloat(valor_derecha) === 0) {
-            return "no se puede dividir entre 0"
+            return new Errores("Semántico", "Operación Modulo Inválida", this.linea, this.col)
         }
         else {
             switch (tipo1) {
@@ -340,7 +450,7 @@ export default class Aritmeticas extends Instruccion {
                             this.tipoDato = new Tipo(tipoDato.DECIMAL)
                             return parseFloat(valor_izquierda) % parseFloat(valor_derecha)
                         default:
-                            return new Errores("Semantico", "Division Invalida", this.linea, this.col)
+                            return new Errores("Semántico", "Operación Modulo Inválida", this.linea, this.col)
                     }
                 case tipoDato.DECIMAL:
                     switch (tipo2) {
@@ -351,17 +461,50 @@ export default class Aritmeticas extends Instruccion {
                             this.tipoDato = new Tipo(tipoDato.DECIMAL)
                             return parseFloat(valor_izquierda) % parseFloat(valor_derecha)
                         default:
-                            return new Errores("Semantico", "Division Invalida", this.linea, this.col)
+                            return new Errores("Semántico", "Operación Modulo Inválida", this.linea, this.col)
                     }
                 default:
-                    return new Errores("Semantico", "Division Invalida", this.linea, this.col)
+                    return new Errores("Semántico", "Operación Modulo Inválida", this.linea, this.col)
             }
         }
     }
 
+    potencia(valor_izquierda: any, valor_derecha: any) {
+        let tipo1 = this.operando_izquierda?.tipoDato.getTipo()
+        let tipo2 = this.operando_derecha?.tipoDato.getTipo()
+        switch (tipo1) {
+            //ENTERO CON TODOS LOS DEMÁS
+            case tipoDato.ENTERO:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.ENTERO)
+                        return Math.pow(parseInt(valor_izquierda), parseInt(valor_derecha))
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
+                    default:
+                        return new Errores("Semántico", "Operación Potencia Inválida", this.linea, this.col)
+                }
+            //DECIMAL CON TODOS LOS DEMÁS
+            case tipoDato.DECIMAL:
+                switch (tipo2) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
+                    case tipoDato.DECIMAL:
+                        this.tipoDato = new Tipo(tipoDato.DECIMAL)
+                        return Math.pow(parseFloat(valor_izquierda), parseFloat(valor_derecha))
+                    default:
+                        return new Errores("Semántico", "Operación Potencia Inválida", this.linea, this.col)
+                }
+            default:
+                return new Errores("Semántico", "Operación Potencia Inválida", this.linea, this.col)
+        }
+    }
+    
     negacion(valor_izquierda: any) {
-        let opU = this.operando_unico?.tipoDato.getTipo()
-        switch (opU) {
+        let op_unico = this.operando_unico?.tipoDato.getTipo()
+        switch (op_unico) {
             case tipoDato.ENTERO:
                 this.tipoDato = new Tipo(tipoDato.ENTERO)
                 return parseInt(valor_izquierda) * -1
@@ -369,9 +512,10 @@ export default class Aritmeticas extends Instruccion {
                 this.tipoDato = new Tipo(tipoDato.DECIMAL)
                 return parseFloat(valor_izquierda) * -1
             default:
-                return new Errores("Semantico", "Negacion Unaria invalida", this.linea, this.col)
+                return new Errores("Semántico", "Operación Negación Unaria Inválida", this.linea, this.col)
         }
     }
+
 
 }
 
@@ -382,5 +526,6 @@ export enum Operadores {
     DIVISION,
     MODULO,
     POTENCIA,
+    CASTEO,
     NEGATIVO
 }

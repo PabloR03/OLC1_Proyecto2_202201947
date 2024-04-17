@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexController = void 0;
+const path_1 = __importDefault(require("path"));
 const Arbol_1 = __importDefault(require("./analisis/simbolo/Arbol"));
 const tablaSimbolos_1 = __importDefault(require("./analisis/simbolo/tablaSimbolos"));
 class controller {
@@ -28,7 +29,26 @@ class controller {
         }
         catch (err) {
             console.log(err);
-            res.send({ "Error": "Ya no sale compi1" });
+            res.send({ "Error": "REVISAR LA ENTRADA" });
+        }
+    }
+    reporteErrores(req, res) {
+        try {
+            let parser = require('./analisis/analizador');
+            let ArbolAst = new Arbol_1.default(parser.parse(req.body.entrada));
+            let Tabla_Simbolos = new tablaSimbolos_1.default();
+            Tabla_Simbolos.setNombre("Ejemplo1");
+            ArbolAst.setTablaGlobal(Tabla_Simbolos);
+            ArbolAst.setConsola("");
+            for (let i of ArbolAst.getInstrucciones()) {
+                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos);
+            }
+            ArbolAst.generarReporteErrores();
+            res.sendFile(path_1.default.resolve('reporteErrores.html'));
+        }
+        catch (err) {
+            console.log(err);
+            res.send({ "Error": "Hubo un error al generar el reporte de errores" });
         }
     }
 }

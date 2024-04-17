@@ -26,16 +26,25 @@ export default class Declaracion extends Instruccion {
                 if ((valor_variable == true || valor_variable  == false) && this.tipoDato.getTipo() == tipoDato.ENTERO) {
                     valor_variable = valor_variable == true ? 1 : 0;
                 }else if (this.valor.tipoDato.getTipo() != this.tipoDato.getTipo()) {
-                    return new Errores("SEMANTICO", "Error Al Declarar Variable.", this.linea, this.col)
+                    let error = new Errores("Semántico", "Error Al Declarar Variable.", this.linea, this.col)
+                    arbol.agregarError(error);
+                    arbol.setConsola("Semántico: Error Al Declarar Variable.")
+                    return error
                 }
             }
             if (this.tipoDato.getTipo() == tipoDato.ENTERO) {
                 if (parseInt(valor_variable) < -2147483648 || parseInt(valor_variable) > 2147483647) {
-                    return new Errores("SEMANTICO", "Variable Fuera De Rango.", this.linea, this.col);
+                    let error = new Errores("Semántico", "Variable Int Fuera De Rango.", this.linea, this.col);
+                    arbol.agregarError(error);
+                    arbol.setConsola("Semántico: Variable Int Fuera De Rango.")
+                    return error
                 }
             }
             if (!tabla.setVariable(new Simbolo(this.tipoDato, elemento, valor_variable))){
-                return new Errores("SEMANTICO", "La Variable Ya Existe.", this.linea, this.col)
+                let error = new Errores("Semántico", "La Variable Ya Existe.", this.linea, this.col);
+                arbol.agregarError(error);
+                arbol.setConsola("Semántico: La Variable Ya Existe.")
+                return error
             }
         });
     }

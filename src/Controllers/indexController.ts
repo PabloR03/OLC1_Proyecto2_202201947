@@ -1,3 +1,4 @@
+import path from 'path';
 import { Request, Response } from 'express';
 import Arbol from './analisis/simbolo/Arbol';
 import tablaSimbolo from './analisis/simbolo/tablaSimbolos';
@@ -25,11 +26,30 @@ class controller {
             res.send({ "Respuesta": ast.getConsola() })
         } catch (err: any) {
             console.log(err)
-            res.send({ "Error": "Ya no sale compi1" })
+            res.send({ "Error": "REVISAR LA ENTRADA" })
+        }
+    }
+        public reporteErrores(req: Request, res: Response) {
+
+            try {
+                let parser = require('./analisis/analizador')
+                let ArbolAst = new Arbol(parser.parse(req.body.entrada))
+                let Tabla_Simbolos = new tablaSimbolo()
+                Tabla_Simbolos.setNombre("Ejemplo1")
+                ArbolAst.setTablaGlobal(Tabla_Simbolos)
+                ArbolAst.setConsola("")
+                for (let i of ArbolAst.getInstrucciones()) {
+                    var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
+                }
+                ArbolAst.generarReporteErrores()
+                res.sendFile(path.resolve('reporteErrores.html'));
+            } catch (err: any) {
+                console.log(err)
+                res.send({ "Error": "Hubo un error al generar el reporte de errores" })
+            }
         }
     }
 
-}
 
 
 export const indexController = new controller();

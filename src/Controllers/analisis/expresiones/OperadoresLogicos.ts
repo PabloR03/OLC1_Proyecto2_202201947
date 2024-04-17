@@ -47,26 +47,48 @@ export default class OperadoresLogicos extends Instruccion {
     }
 
     or(valor_izquierda: any, valor_derecha: any) {
-        // Convertir los valores a booleanos si son cadenas
-        const left = typeof valor_izquierda === 'string' ? (valor_izquierda.toLowerCase() === 'true') : valor_izquierda;
-        const right = typeof valor_derecha === 'string' ? (valor_derecha.toLowerCase() === 'true') : valor_derecha;
-
-        // Verificar los valores booleanos y devolver el resultado
-        return left || right;
+        let tipo1 = this.valor_izquierda?.tipoDato.getTipo()
+        let tipo2 = this.valor_derecha?.tipoDato.getTipo()
+        switch (tipo1) {
+            case tipoDato.BOOL:
+                switch (tipo2) {
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.BOOL)
+                        return valor_izquierda || valor_derecha
+                    default:
+                        return new Errores("Semántico", "Operación Or Inválida", this.linea, this.col)
+                }
+            default:
+                return new Errores("Semántico", "Operación Or Inválida", this.linea, this.col)
+        }
     }
 
     and(valor_izquierda: any, valor_derecha: any) {
-        // Convertir los valores a booleanos si son cadenas
-        const left = typeof valor_izquierda === 'string' ? (valor_izquierda.toLowerCase() === 'true') : valor_izquierda;
-        const right = typeof valor_derecha === 'string' ? (valor_derecha.toLowerCase() === 'true') : valor_derecha;
-
-        // Verificar los valores booleanos y devolver el resultado de AND
-        return left && right;
+        let tipo1 = this.valor_izquierda?.tipoDato.getTipo()
+        let tipo2 = this.valor_derecha?.tipoDato.getTipo()
+        switch (tipo1) {
+            case tipoDato.BOOL:
+                switch (tipo2) {
+                    case tipoDato.BOOL:
+                        this.tipoDato = new Tipo(tipoDato.BOOL)
+                        return valor_izquierda && valor_derecha
+                    default:
+                        return new Errores("Semántico", "Operación And Inválida", this.linea, this.col)
+                }
+            default:
+                return new Errores("Semántico", "Operación And Inválida", this.linea, this.col)
+        }
     }
 
-    not(op: any) {
-        const value = typeof op === 'string' ? (op.toLowerCase() === 'true') : op;
-        return !value;
+    not(valor_unico: any) {
+        let op_unico = this.opUnico?.tipoDato.getTipo()
+        switch (op_unico) {
+            case tipoDato.BOOL:
+                this.tipoDato = new Tipo(tipoDato.BOOL)
+                return !valor_unico
+            default:
+                return new Errores("Semántico", "Operación Not Inválida", this.linea, this.col)
+        }
     }
 }
 
