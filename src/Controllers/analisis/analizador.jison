@@ -10,7 +10,7 @@ const OperadoresRelacionales    = require('./expresiones/OperadoresRelacionales'
 const OperadoresLogicos         = require('./expresiones/OperadoresLogicos')
 const FuncionesTexto            = require('./expresiones/FuncionTexto')
 const AsignacionVar             = require('./instrucciones/AsignacionVar')
-//const casteos                   = require('./expresiones/casteos')
+const Casteo                    = require('./expresiones/Casteos')
 const IncrementoDecremento      = require('./instrucciones/IncrementoDecremento')
 const Break                     = require('./Transferencia.ts/Break')
 const If                        = require('./control/If')
@@ -19,6 +19,10 @@ const For                       = require('./Ciclos/For')
 const While                     = require('./Ciclos/While')
 const Continue                  = require('./Transferencia.ts/Continue')
 const Return                    = require('./Transferencia.ts/Return')
+const Switch                    = require('./control/Switch')
+const Case                      = require('./control/Case')
+const Default                   = require('./control/Default')
+const Ternario                  = require('./expresiones/Ternario')
 
 %}
 
@@ -53,12 +57,14 @@ const Return                    = require('./Transferencia.ts/Return')
 "for"                       return 'FOR'
 "continue"                  return 'CONTINUE'
 "return"                    return 'RETURN'
+"switch"                    return 'SWITCH'
+"case"                      return 'CASE'
+"default"                   return 'DEFAULT'
 
 "if"                        return 'IF'
 "else"                      return 'ELSE'
 "while"                     return 'WHILE'
 "do"                        return 'DO'
-"break"                     return 'BREAK'
 
 "["                         return 'CORCHETEIZQ'
 "]"                         return 'CORCHETEDER'
@@ -113,6 +119,7 @@ const Return                    = require('./Transferencia.ts/Return')
 /lex
 
 // precedencias
+%left 'INTERRO'
 %left 'OR'
 %left 'AND'
 %right 'EXCLAMA'
@@ -121,7 +128,8 @@ const Return                    = require('./Transferencia.ts/Return')
 %left 'DIV' 'MULTICACION' 'MODULO'
 %right 'pow'
 %right 'UMENOS'
-//%left 'CASTEOS'
+%left 'PARENTESISIZQ'
+
 %start inicio
 %%
 inicio : instrucciones EOF                  { return $1; };
@@ -130,18 +138,18 @@ instrucciones : instrucciones instruccion   { $1.push($2); $$=$1; }
                 | instruccion               { $$=[$1]; }
 ;
 
-instruccion : declaracion_vars  PYC  { $$=$1; }
+instruccion : declaracion_vars  PYC   { $$=$1; }
                 | asignacion_vars PYC { $$=$1; }
-                | print      PYC    { $$=$1; }
-                //| casteoss       { $$=$1; }
-                | ifs          { $$=$1; }
-                | fors         { $$=$1; }
-                | whiles       { $$=$1; }
-                | do_whiles    { $$=$1; }
-                | breaks PYC   { $$=$1; }
-                | continue PYC { $$=$1; }
-                | return PYC   { $$=$1; }
-                //| ternarios   { $$=$1; }
+                | print      PYC      { $$=$1; }
+                | ifs                 { $$=$1; }
+                | fors                { $$=$1; }
+                | whiles              { $$=$1; }
+                | do_whiles           { $$=$1; }
+                | breaks PYC          { $$=$1; }
+                | continues PYC       { $$=$1; }
+                | return PYC          { $$=$1; }
+                | switchs             { $$=$1; }
+                //| returns PYC  { $$=$1; }
 ;
 
 asignacion_vars : ID IGUAL expresion    { $$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column); }
@@ -167,15 +175,6 @@ lista_nombre_var : lista_nombre_var COMA ID { $$=$1.push($3); $$=$1; }
 print :   COUT MENORQUE MENORQUE expresion                           { $$= new Print.default($4, @1.first_line, @1.first_column); }
         | COUT MENORQUE MENORQUE expresion MENORQUE MENORQUE ENDL    { $$= new Printl.default($4, @1.first_line, @1.first_column); }
 ;
-
-//casteoss:  ID IGUAL PARENTESISIZQ tipoDato PARENTESISDER expresion PYC          { $$ = new casteos.default(casteos.FuncionCast.CASTEOS, @1.first_line, @1.first_column, $4, $6); }
-//;
-
-//ternarios : expresion INTERRO resultadoternario { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.TERNARIO, @1.first_line, @1.first_column, $1, null);}
-//;
-//
-//resultadoternario : expresion DPUNTOS expresion PYC { $$ = new OperadoresRelacionales.default(OperadoresRelacionales.OperadoresRelacionales.OPERARTERNARIO, @1.first_line, @1.first_column, $1, $3); }
-//;
 
 expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.ENTERO), $1, @1.first_line, @1.first_column); }
                 | DECIMAL  { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.DECIMAL), $1, @1.first_line, @1.first_column); }
@@ -205,7 +204,8 @@ expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoD
                 | TOUPPER PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOUPPER, @1.first_line, @1.first_column, $3); }
                 | TOROUND PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOROUND, @1.first_line, @1.first_column, $3); }
                 | TOSTRING PARENTESISIZQ expresion PARENTESISDER        { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOSTRING, @1.first_line, @1.first_column, $3); }
-                //| PARENTESISIZQ tipoDato PARENTESISDER expresion        { $$ = new Aritmeticas.default(Aritmeticas.Operadores.CASTEO, @1.first_line, @1.first_column, $2, $4); } 
+                | PARENTESISIZQ tipoDato PARENTESISDER expresion        { $$ = new Casteo.default($2, @1.first_line, @1.first_column, $4); } 
+                | expresion INTERRO expresion DPUNTOS expresion         { $$ = new Ternario.default($1, $3, $5, @1.first_line, @1.first_column); }
 ;
 
 
@@ -245,5 +245,20 @@ breaks: BREAK  { $$ = new Break.default(@1.first_line, @1.first_column); }
 continues: CONTINUE  { $$ = new Continue.default(@1.first_line, @1.first_column); }
 ;
 
-returns: RETURN expresion { $$ = new Return.default($2,@1.first_line, @1.first_column); }
+//returns: RETURN expresion { $$ = new Return.default($2,@1.first_line, @1.first_column); }
+//;
+
+switchs: SWITCH PARENTESISIZQ expresion PARENTESISDER LLAVEIZQ cases defaults LLAVEDER { $$ = new Switch.default($3, @1.first_line, @1.first_column, $6, $7) }
+        | SWITCH PARENTESISIZQ expresion PARENTESISDER LLAVEIZQ cases LLAVEDER { $$ = new Switch.default($3, @1.first_line, @1.first_column, $6, undefined) }
+        | SWITCH PARENTESISIZQ expresion PARENTESISDER LLAVEIZQ defaults LLAVEDER { $$ = new Switch.default($3, @1.first_line, @1.first_column, undefined, $6) }
+;
+
+cases : cases caso { if($2 != false) $1.push($2); $$ = $1 }
+                | caso { $$ = ($1 != false) ? [$1] : [] }
+;
+
+caso : CASE expresion DPUNTOS instrucciones { $$ = new Case.default($2, $4, @1.first_line, @1.first_column) }
+;
+
+defaults : DEFAULT DPUNTOS instrucciones { $$ = new Default.default($3, @1.first_line, @1.first_column) }
 ;
