@@ -87,6 +87,8 @@ export default class OperadoresLogicos extends Instruccion {
                 this.tipoDato = new Tipo(tipoDato.BOOL)
                 return !valor_unico
             default:
+                //para imprimir en la consola el error
+                
                 return new Errores("Semántico", "Operación Not Inválida", this.linea, this.col)
         }
     }

@@ -1,4 +1,5 @@
 import { Instruccion } from "../abstracto/Instruccion";
+import Case from "../control/Case";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
 import TablaSimbolo from "../simbolo/tablaSimbolos";
@@ -30,6 +31,8 @@ export default class FuncionesRound extends Instruccion {
                 return this.tostring(valor_unico)
             case Funcion.TOUPPER:
                 return this.toupper(valor_unico)
+            case Funcion.TYPEOF:
+                return this.typeof()
             default:
                 return new Errores("Semántico", "Función Round Inválida", this.linea, this.col)
         }
@@ -91,6 +94,24 @@ export default class FuncionesRound extends Instruccion {
                 return new Errores("Semantico", "Función ToUpper Inválida", this.linea, this.col)
         }
     }
+
+    typeof() {
+        let op_unico = this.operando_unico?.tipoDato.getTipo()
+        switch (op_unico) {
+            case tipoDato.ENTERO:
+                return 'Int'
+            case tipoDato.DECIMAL:
+                return 'Double'
+            case tipoDato.BOOL:
+                return 'Boole'
+            case tipoDato.CARACTER:
+                return 'Char'
+            case tipoDato.CADENA:
+                return 'String'
+            default:
+                return new Errores("Semántico", "Función TypeOf Inválida", this.linea, this.col)
+        }
+    }
 }
 
 
@@ -98,5 +119,6 @@ export enum Funcion {
     TOROUND,
     TOLOWER,
     TOSTRING,
-    TOUPPER
+    TOUPPER,
+    TYPEOF
 }

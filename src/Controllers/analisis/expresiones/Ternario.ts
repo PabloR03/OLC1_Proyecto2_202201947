@@ -28,8 +28,10 @@ export default class OpTernario extends Instruccion{
         if(exp2 instanceof Errores) return exp2;
 
         if(this.condicion.tipoDato.getTipo() != tipoDato.BOOL){
-            arbol.Print("\nError Semantico: La condicion no es booleana. linea:"+ this.linea+" col: " +(this.col+1));
-            return new Errores("Semantico", "La condicion no es booleana", this.linea, this.col);
+            let error = new Errores("Semántico", "Debe usar un tipo de variable Boole.", this.linea, this.col);
+            arbol.agregarError(error)
+            arbol.setConsola("Semántico: Debe usar un tipo de variable Boole.")
+            return error
         }
 
         if(cond){

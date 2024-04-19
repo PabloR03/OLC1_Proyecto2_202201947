@@ -23,6 +23,9 @@ const Switch                    = require('./control/Switch')
 const Case                      = require('./control/Case')
 const Default                   = require('./control/Default')
 const Ternario                  = require('./expresiones/Ternario')
+const Metodo                    = require('./instrucciones/Metodo')
+const Execute                   = require('./instrucciones/Run')
+const Llamada                   = require('./instrucciones/Llamada')
 
 %}
 
@@ -60,6 +63,10 @@ const Ternario                  = require('./expresiones/Ternario')
 "switch"                    return 'SWITCH'
 "case"                      return 'CASE'
 "default"                   return 'DEFAULT'
+"typeof"                    return 'TYPEOF'
+"void"                      return 'VOID'
+"execute"                   return 'EXECUTE'
+"return"                    return 'RETURN'
 
 "if"                        return 'IF'
 "else"                      return 'ELSE'
@@ -149,7 +156,10 @@ instruccion : declaracion_vars  PYC   { $$=$1; }
                 | continues PYC       { $$=$1; }
                 | return PYC          { $$=$1; }
                 | switchs             { $$=$1; }
-                //| returns PYC  { $$=$1; }
+                | metodos             { $$=$1; }
+                | execute   PYC       { $$=$1; }
+                | llamada PYC         { $$=$1; }
+                | retunrs PYC         { $$=$1; }
 ;
 
 asignacion_vars : ID IGUAL expresion    { $$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column); }
@@ -201,6 +211,7 @@ expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoD
                 | expresion AND expresion       { $$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_AND, @1.first_line, @1.first_column, $1, $3);} 
                 | EXCLAMA expresion             { $$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_NOT, @1.first_line, @1.first_column, $2);}
                 | TOLOWER PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOLOWER, @1.first_line, @1.first_column, $3); }
+                | TYPEOF PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TYPEOF, @1.first_line, @1.first_column, $3); }
                 | TOUPPER PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOUPPER, @1.first_line, @1.first_column, $3); }
                 | TOROUND PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOROUND, @1.first_line, @1.first_column, $3); }
                 | TOSTRING PARENTESISIZQ expresion PARENTESISDER        { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOSTRING, @1.first_line, @1.first_column, $3); }
@@ -214,6 +225,7 @@ tipoDato : INT   { $$ = new Tipo.default(Tipo.tipoDato.ENTERO); }
         | CHAR   { $$ = new Tipo.default(Tipo.tipoDato.CARACTER); }
         | BOOL   { $$ = new Tipo.default(Tipo.tipoDato.BOOL); }
         | STRING { $$ = new Tipo.default(Tipo.tipoDato.CADENA); }
+        | VOID   { $$ = new Tipo.default(Tipo.tipoDato.VOID); }
 ;
 
 
@@ -242,11 +254,14 @@ fors : FOR PARENTESISIZQ forfuncional PYC expresion PYC asignacion_vars PARENTES
 breaks: BREAK  { $$ = new Break.default(@1.first_line, @1.first_column); }
 ;
 
+
 continues: CONTINUE  { $$ = new Continue.default(@1.first_line, @1.first_column); }
 ;
 
-//returns: RETURN expresion { $$ = new Return.default($2,@1.first_line, @1.first_column); }
-//;
+retunrs : RETURN { $$ = new Break.default(@1.first_line, @1.first_column); }
+                | RETURN expresion { $$ = new Return.default(@1.first_line, @1.first_column, $2); }
+;
+
 
 switchs: SWITCH PARENTESISIZQ expresion PARENTESISDER LLAVEIZQ cases defaults LLAVEDER { $$ = new Switch.default($3, @1.first_line, @1.first_column, $6, $7) }
         | SWITCH PARENTESISIZQ expresion PARENTESISDER LLAVEIZQ cases LLAVEDER { $$ = new Switch.default($3, @1.first_line, @1.first_column, $6, undefined) }
@@ -261,4 +276,23 @@ caso : CASE expresion DPUNTOS instrucciones { $$ = new Case.default($2, $4, @1.f
 ;
 
 defaults : DEFAULT DPUNTOS instrucciones { $$ = new Default.default($3, @1.first_line, @1.first_column) }
+;
+//    constructor(id: string, tipo:Tipo, instrucciones: Instruccion[], linea: number, col: number, parametros: any[]) {
+
+metodos : tipoDato ID PARENTESISIZQ PARAMS PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $7, @1.first_line, @1.first_column, $4); }
+        | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $6, @1.first_line, @1.first_column); }
+;
+PARAMS : PARAMS COMA tipoDato ID {$1.push({tipo:$3, id:$4}); $$ = $1; }
+        | tipoDato ID { $$ = [{tipo:$1, id:$2}] }
+;
+execute : EXECUTE ID PARENTESISIZQ paramscall PARENTESISDER     { $$ = new Execute.default($2, @1.first_line, @1.first_column, $4); }
+        | EXECUTE ID PARENTESISIZQ PARENTESISDER                { $$ = new Execute.default($2, @1.first_line, @1.first_column, []); }
+; 
+
+llamada : ID PARENTESISIZQ paramscall PARENTESISDER { $$ = new Llamada.default($1, @1.first_line, @1.first_column, $3); }
+        | ID PARENTESISIZQ PARENTESISDER { $$ = new Llamada.default($1, @1.first_line, @1.first_column, []); }
+;
+
+paramscall: paramscall COMA expresion { $$ = $1.push($3); $$ = $1; }
+        | expresion { $$ = [$1]; }
 ;
