@@ -10,6 +10,8 @@ export default class Arbol {
     private tablaGlobal: tablaSimbolo
     private errores: Array<Errores>
     private funciones : Array<Instruccion>
+    private lista_tablas: Array<tablaSimbolo>
+
 
     constructor(instrucciones: Array<Instruccion>) {
         this.instrucciones = instrucciones
@@ -17,6 +19,12 @@ export default class Arbol {
         this.tablaGlobal = new tablaSimbolo()
         this.errores = new Array<Errores>
         this.funciones = new Array<Instruccion>()
+        this.lista_tablas = []
+
+    }
+
+    public agregarTabla(tabla: tablaSimbolo) {
+        this.lista_tablas.push(tabla)
     }
 
     public Print(contenido: any) {

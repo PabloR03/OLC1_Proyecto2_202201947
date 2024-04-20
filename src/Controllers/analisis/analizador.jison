@@ -26,6 +26,15 @@ const Ternario                  = require('./expresiones/Ternario')
 const Metodo                    = require('./instrucciones/Metodo')
 const Execute                   = require('./instrucciones/Run')
 const Llamada                   = require('./instrucciones/Llamada')
+const length                    = require('./expresiones/Length')
+const C_STR                     = require('./expresiones/c_str')
+const DeclaracionM              = require('./dimenciones/DeclaracionM')
+const AsignacionM               = require('./dimenciones/AsignacionM')
+const AccesoM                   = require('./dimenciones/AccesoM')
+const DeclaracionA              = require('./dimenciones/DeclaracionA')
+const AccesoA                   = require('./dimenciones/AccesoA')
+const AsignacionA               = require('./dimenciones/AsignacionArreglo')
+const DeclaracionACSTR          = require('./dimenciones/DeclaracionACSTR')
 
 %}
 
@@ -67,6 +76,9 @@ const Llamada                   = require('./instrucciones/Llamada')
 "void"                      return 'VOID'
 "execute"                   return 'EXECUTE'
 "return"                    return 'RETURN'
+"new"                       return 'NEW'
+"length"                    return 'LENGTH'
+"c_str"                     return 'C_STR'
 
 "if"                        return 'IF'
 "else"                      return 'ELSE'
@@ -83,6 +95,7 @@ const Llamada                   = require('./instrucciones/Llamada')
 "?"                         return 'INTERRO'
 ":"                         return 'DPUNTOS'
 ","                         return 'COMA'
+"."                         return 'PUNTO'
 
 "++"                        return 'INCREMENTO'
 "--"                        return 'DECREMENTO' 
@@ -135,6 +148,7 @@ const Llamada                   = require('./instrucciones/Llamada')
 %left 'DIV' 'MULTICACION' 'MODULO'
 %right 'pow'
 %right 'UMENOS'
+%left 'PUNTO'
 %left 'PARENTESISIZQ'
 
 %start inicio
@@ -160,10 +174,13 @@ instruccion : declaracion_vars  PYC   { $$=$1; }
                 | execute   PYC       { $$=$1; }
                 | llamada PYC         { $$=$1; }
                 | retunrs PYC         { $$=$1; }
+                // | expresion PYC       { $$=$1; }
 ;
 
 asignacion_vars : ID IGUAL expresion    { $$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column); }
                 | incrementos              { $$ = $1; }
+                | ID CORCHETEIZQ expresion CORCHETEDER IGUAL expresion { $$ = new AsignacionA.default($1, $3, $6, @1.first_line, @1.first_column); }
+                | ID CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER IGUAL expresion { $$ = new AsignacionM.default($1, $3, $6, $9, @1.first_line, @1.first_column); }
 ;
 
 res_booleanas : TRUE       { $$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), true, @1.first_line, @1.first_column);  }
@@ -176,6 +193,8 @@ incrementos : ID INCREMENTO { $$ = new IncrementoDecremento.default("INCREMENTO"
 
 declaracion_vars : tipoDato lista_nombre_var IGUAL expresion  { $$ = new Declaracion.default($1, @1.first_line, @1.first_column, $2, $4); } 
                 | tipoDato lista_nombre_var                   { $$ = new Declaracion.default($1, @1.first_line, @1.first_column, $2, null); }
+                | arreglos                                    { $$ = $1; }
+                | matrices                                    { $$ = $1; }
 ;
 
 lista_nombre_var : lista_nombre_var COMA ID { $$=$1.push($3); $$=$1; }
@@ -211,12 +230,16 @@ expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoD
                 | expresion AND expresion       { $$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_AND, @1.first_line, @1.first_column, $1, $3);} 
                 | EXCLAMA expresion             { $$ = new OperadoresLogicos.default(OperadoresLogicos.OperadorLogico.O_NOT, @1.first_line, @1.first_column, $2);}
                 | TOLOWER PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOLOWER, @1.first_line, @1.first_column, $3); }
-                | TYPEOF PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TYPEOF, @1.first_line, @1.first_column, $3); }
+                | TYPEOF PARENTESISIZQ expresion PARENTESISDER          { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TYPEOF, @1.first_line, @1.first_column, $3); }
                 | TOUPPER PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOUPPER, @1.first_line, @1.first_column, $3); }
                 | TOROUND PARENTESISIZQ expresion PARENTESISDER         { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOROUND, @1.first_line, @1.first_column, $3); }
                 | TOSTRING PARENTESISIZQ expresion PARENTESISDER        { $$ = new FuncionesTexto.default(FuncionesTexto.Funcion.TOSTRING, @1.first_line, @1.first_column, $3); }
                 | PARENTESISIZQ tipoDato PARENTESISDER expresion        { $$ = new Casteo.default($2, @1.first_line, @1.first_column, $4); } 
                 | expresion INTERRO expresion DPUNTOS expresion         { $$ = new Ternario.default($1, $3, $5, @1.first_line, @1.first_column); }
+                | expresion PUNTO LENGTH PARENTESISIZQ PARENTESISDER    { $$ = new length.default(length.Funcion.LENGTH,@1.first_line, @1.first_column, $1); }
+                | expresion PUNTO C_STR PARENTESISIZQ PARENTESISDER     { $$ = new C_STR.default(C_STR.Funcion.C_STR,@1.first_line, @1.first_column, $1); }
+                | ID CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER { $$ = new AccesoM.default($1, @1.first_line, @1.first_column, $3, $6); }
+                | ID CORCHETEIZQ expresion CORCHETEDER                                   { $$ = new AccesoA.default($1, @1.first_line, @1.first_column, $3); }
 ;
 
 
@@ -277,7 +300,6 @@ caso : CASE expresion DPUNTOS instrucciones { $$ = new Case.default($2, $4, @1.f
 
 defaults : DEFAULT DPUNTOS instrucciones { $$ = new Default.default($3, @1.first_line, @1.first_column) }
 ;
-//    constructor(id: string, tipo:Tipo, instrucciones: Instruccion[], linea: number, col: number, parametros: any[]) {
 
 metodos : tipoDato ID PARENTESISIZQ PARAMS PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $7, @1.first_line, @1.first_column, $4); }
         | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $6, @1.first_line, @1.first_column); }
@@ -295,4 +317,21 @@ llamada : ID PARENTESISIZQ paramscall PARENTESISDER { $$ = new Llamada.default($
 
 paramscall: paramscall COMA expresion { $$ = $1.push($3); $$ = $1; }
         | expresion { $$ = [$1]; }
+;
+
+matrices : tipoDato ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL CORCHETEIZQ contenidomatrix CORCHETEDER { $$ = new DeclaracionM.default($1,@1.first_line, @1.first_column, $2, $9); }
+                | tipoDato ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL NEW tipoDato CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER { $$ = new DeclaracionM.default($1,@1.first_line, @1.first_column, $2, null, $11, $14); }
+;
+
+arreglos : tipoDato ID CORCHETEIZQ CORCHETEDER IGUAL CORCHETEIZQ contenidoarreglo CORCHETEDER { $$ = new DeclaracionA.default($1,@1.first_line, @1.first_column, $2, $7); }
+                | tipoDato ID CORCHETEIZQ CORCHETEDER IGUAL NEW tipoDato CORCHETEIZQ expresion CORCHETEDER { $$ = new DeclaracionA.default($1,@1.first_line, @1.first_column, $2, null, $9); }
+                | tipoDato ID CORCHETEIZQ CORCHETEDER IGUAL expresion { $$ = new DeclaracionACSTR.default($1,@1.first_line, @1.first_column, $2, $6); }
+;
+
+contenidoarreglo : contenidoarreglo COMA expresion { $1.push($3); $$ = $1; }
+                | expresion { $$ = [$1]; }
+;
+
+contenidomatrix : contenidomatrix COMA CORCHETEIZQ contenidoarreglo CORCHETEDER { $1.push($4); $$ = $1; }
+                | CORCHETEIZQ contenidoarreglo CORCHETEDER { $$ = [$2]; }
 ;

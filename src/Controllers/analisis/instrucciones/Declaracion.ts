@@ -40,7 +40,7 @@ export default class Declaracion extends Instruccion {
                     return error
                 }
             }
-            if (!tabla.setVariable(new Simbolo(this.tipoDato, elemento, valor_variable))){
+            if (!tabla.setVariable(new Simbolo(this.tipoDato, elemento, this.linea, this.col, valor_variable))){
                 let error = new Errores("Semántico", "La Variable Ya Existe.", this.linea, this.col);
                 arbol.agregarError(error);
                 arbol.setConsola("Semántico: La Variable Ya Existe.")
