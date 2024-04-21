@@ -36,6 +36,13 @@ const AccesoA                   = require('./dimenciones/AccesoA')
 const AsignacionA               = require('./dimenciones/AsignacionArreglo')
 const DeclaracionACSTR          = require('./dimenciones/DeclaracionACSTR')
 
+const Metodoso                  = require('./instrucciones/Metodoso')
+const Llamadoso                 = require('./instrucciones/Llamadoso')
+const Returnoso                 = require('./Transferencia.ts/retunrturn')
+const Executoso                 = require('./instrucciones/Execute')
+
+
+
 %}
 
 
@@ -240,6 +247,8 @@ expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoD
                 | expresion PUNTO C_STR PARENTESISIZQ PARENTESISDER     { $$ = new C_STR.default(C_STR.Funcion.C_STR,@1.first_line, @1.first_column, $1); }
                 | ID CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER { $$ = new AccesoM.default($1, @1.first_line, @1.first_column, $3, $6); }
                 | ID CORCHETEIZQ expresion CORCHETEDER                                   { $$ = new AccesoA.default($1, @1.first_line, @1.first_column, $3); }
+                | llamada                                        { $$=$1; }
+
 ;
 
 
@@ -282,7 +291,7 @@ continues: CONTINUE  { $$ = new Continue.default(@1.first_line, @1.first_column)
 ;
 
 retunrs : RETURN { $$ = new Break.default(@1.first_line, @1.first_column); }
-                | RETURN expresion { $$ = new Return.default(@1.first_line, @1.first_column, $2); }
+                | RETURN expresion { $$ = new Returnoso.default(@1.first_line, @1.first_column, $2); }
 ;
 
 
@@ -301,11 +310,12 @@ caso : CASE expresion DPUNTOS instrucciones { $$ = new Case.default($2, $4, @1.f
 defaults : DEFAULT DPUNTOS instrucciones { $$ = new Default.default($3, @1.first_line, @1.first_column) }
 ;
 
-metodos : tipoDato ID PARENTESISIZQ PARAMS PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $7, @1.first_line, @1.first_column, $4); }
+
+metodos : tipoDato ID PARENTESISIZQ parametross PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $7, @1.first_line, @1.first_column, $4); }
         | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $6, @1.first_line, @1.first_column); }
 ;
-PARAMS : PARAMS COMA tipoDato ID {$1.push({tipo:$3, id:$4}); $$ = $1; }
-        | tipoDato ID { $$ = [{tipo:$1, id:$2}] }
+parametross : parametross COMA tipoDato ID {$1.push({tipo:$3, id:[$4]}); $$ = [$1]; }
+        | tipoDato ID { $$ = [{tipo:$1, id:[$2]}] }
 ;
 execute : EXECUTE ID PARENTESISIZQ paramscall PARENTESISDER     { $$ = new Execute.default($2, @1.first_line, @1.first_column, $4); }
         | EXECUTE ID PARENTESISIZQ PARENTESISDER                { $$ = new Execute.default($2, @1.first_line, @1.first_column, []); }
@@ -315,9 +325,29 @@ llamada : ID PARENTESISIZQ paramscall PARENTESISDER { $$ = new Llamada.default($
         | ID PARENTESISIZQ PARENTESISDER { $$ = new Llamada.default($1, @1.first_line, @1.first_column, []); }
 ;
 
-paramscall: paramscall COMA expresion { $$ = $1.push($3); $$ = $1; }
+paramscall: paramscall COMA expresion { $1.push($3); $$ = $1; }
         | expresion { $$ = [$1]; }
 ;
+
+/*
+metodos : tipoDato ID PARENTESISIZQ parametross PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodoso.default($1, $2, $4, $7, @1.first_line, @1.first_column); }
+        | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodoso.default($1, $2, [], $6, @1.first_line, @1.first_column); }
+;
+parametross : parametross COMA tipoDato ID {$1.push({tipo:$3, id:[$4]}); $$ = $1; }
+        | tipoDato ID { $$ = [{tipo:$1, id:[$2]}] }
+;
+execute : EXECUTE ID PARENTESISIZQ paramscall PARENTESISDER     { $$ = new Executoso.default($2,$4, @1.first_line, @1.first_column); }
+        | EXECUTE ID PARENTESISIZQ PARENTESISDER                { $$ = new Executoso.default($2,[], @1.first_line, @1.first_column); }
+; 
+
+llamada : ID PARENTESISIZQ paramscall PARENTESISDER { $$ = new Llamadoso.default($1, $3, @1.first_line, @1.first_column); }
+        | ID PARENTESISIZQ PARENTESISDER { $$ = new Llamadoso.default($1, [], @1.first_line, @1.first_column); }
+;
+
+paramscall: paramscall COMA expresion { $1.push($3); $$ = $1; }
+        | expresion { $$ = [$1]; }
+;
+*/
 
 matrices : tipoDato ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL CORCHETEIZQ contenidomatrix CORCHETEDER { $$ = new DeclaracionM.default($1,@1.first_line, @1.first_column, $2, $9); }
                 | tipoDato ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL NEW tipoDato CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER { $$ = new DeclaracionM.default($1,@1.first_line, @1.first_column, $2, null, $11, $14); }

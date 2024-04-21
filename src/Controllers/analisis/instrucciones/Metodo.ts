@@ -20,7 +20,7 @@ export default class Metodo extends Instruccion {
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
         for (let instr of this.instrucciones) {
             let val = instr.interpretar(arbol, tabla)
-            //if (val instanceof Errores) return val
+            if (val instanceof Errores) return val
         }
     }
 }

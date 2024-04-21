@@ -61,6 +61,8 @@ export default class Declaracion extends Instruccion {
                 return ''
             case tipoDato.CADENA:
                 return ""
+            case tipoDato.VOID:
+                return null
             default:
                 return null
         }

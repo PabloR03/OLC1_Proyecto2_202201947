@@ -53,24 +53,45 @@ class controller {
             res.send({ "Error": "REVISAR LA ENTRADA" })
         }
     }
-        //public reporteErrores(req: Request, res: Response) {
-        //    try {
-        //        let parser = require('./analisis/analizador')
-        //        let ArbolAst = new Arbol(parser.parse(req.body.entrada))
-        //        let Tabla_Simbolos = new tablaSimbolo()
-        //        Tabla_Simbolos.setNombre("Ejemplo1")
-        //        ArbolAst.setTablaGlobal(Tabla_Simbolos)
-        //        ArbolAst.setConsola("")
-        //        for (let i of ArbolAst.getInstrucciones()) {
-        //            var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
-        //        }
-        //        ArbolAst.generarReporteErrores()
-        //        res.sendFile(path.resolve('reporteErrores.html'));
-        //    } catch (err: any) {
-        //        console.log(err)
-        //        res.send({ "Error": "Hubo un error al generar el reporte de errores" })
-        //    }
-        //}
+    public rerrores(req: Request, res: Response) {
+        try {
+            let parser = require('./analisis/analizador')
+            let ArbolAst = new Arbol(parser.parse(req.body.entrada))
+            let Tabla_Simbolos = new tablaSimbolo()
+            Tabla_Simbolos.setNombre("Tabla Global")
+            ArbolAst.setTablaGlobal(Tabla_Simbolos)
+            ArbolAst.agregarTabla(Tabla_Simbolos)
+            ArbolAst.setConsola("")
+            for (let i of ArbolAst.getInstrucciones()) {
+                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
+            }
+            ArbolAst.generarReporteErrores()
+            res.sendFile(path.resolve('REPORTE_ERRORES.html'));
+        } catch (err: any) {
+            console.log(err)
+            res.send({ "Error": "Error Al Generar Reporte De Errores." })
+        }
+    }
+
+    public rtablasimbolos(req: Request, res: Response) {
+        try {
+            let parser = require('./analisis/analizador')
+            let ArbolAst = new Arbol(parser.parse(req.body.entrada))
+            let Tabla_Simbolos = new tablaSimbolo()
+            Tabla_Simbolos.setNombre("Tabla Global")
+            ArbolAst.setTablaGlobal(Tabla_Simbolos)
+            ArbolAst.agregarTabla(Tabla_Simbolos)
+            ArbolAst.setConsola("")
+            for (let i of ArbolAst.getInstrucciones()) {
+                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
+            }
+            ArbolAst.generarReporteTablas()
+            res.sendFile(path.resolve('TABLA_SIMBOLOS.html'));
+        } catch (err: any) {
+            console.log(err)
+            res.send({ "Error": "Error Al Generar Reporte De Tablas De Simbolos." })
+        }
+    }
     }
 
 

@@ -1,0 +1,150 @@
+TERMINALES:
+no_terminales: 
+inicio:  <inicio>
+<inicio> ::= <instrucciones> EOF
+
+<instrucciones> ::= <instrucciones> <instruccion>
+                  | <instruccion>
+
+<instruccion> ::= <declaracion_vars> PYC
+                | <asignacion_vars> PYC
+                | <print> PYC
+                | <ifs>
+                | <fors>
+                | <whiles>
+                | <do_whiles>
+                | BREAK PYC
+                | CONTINUE PYC
+                | RETURN PYC
+                | <switchs>
+                | <metodos>
+                | EXECUTE PYC
+                | <llamada> PYC
+                | retunrs PYC
+
+<asignacion_vars> ::= ID IGUAL <expresion>
+                     | <incrementos>
+                     | ID CORCHETEIZQ <expresion> CORCHETEDER IGUAL <expresion>
+                     | ID CORCHETEIZQ <expresion> CORCHETEDER CORCHETEIZQ <expresion> CORCHETEDER IGUAL <expresion>
+
+<res_booleanas> ::= TRUE
+                   | FALSE
+
+<incrementos> ::= ID INCREMENTO
+                | ID DECREMENTO
+
+<declaracion_vars> ::= <tipoDato> <lista_nombre_var> IGUAL <expresion>
+                      | <tipoDato> <lista_nombre_var>
+                      | <arreglos>
+                      | <matrices>
+
+<lista_nombre_var> ::= <lista_nombre_var> COMA ID
+                      | ID
+
+<print> ::= COUT MENORQUE MENORQUE <expresion>
+          | COUT MENORQUE MENORQUE <expresion> MENORQUE MENORQUE ENDL
+
+<expresion> ::= ENTERO
+               | DECIMAL
+               | CARACTER
+               | CADENA
+               | TRUE
+               | FALSE
+               | ID
+               | MENOS <expresion>
+               | <expresion> MAS <expresion>
+               | <expresion> DIV <expresion>
+               | <expresion> MENOS <expresion>
+               | <expresion> MULTICACION <expresion>
+               | POW PARENTESISIZQ <expresion> COMA <expresion> PARENTESISDER
+               | <expresion> MODULO <expresion>
+               | <expresion> MENORQUE <expresion>
+               | <expresion> MAYORQUE <expresion>
+               | <expresion> MENORIGUAL <expresion>
+               | <expresion> IGUALIGUAL <expresion>
+               | <expresion> DISTINTO <expresion>
+               | <expresion> MAYORIGUAL <expresion>
+               | PARENTESISIZQ <expresion> PARENTESISDER
+               | <expresion> OR <expresion>
+               | <expresion> AND <expresion>
+               | EXCLAMA <expresion>
+               | TOLOWER PARENTESISIZQ <expresion> PARENTESISDER
+               | TYPEOF PARENTESISIZQ <expresion> PARENTESISDER
+               | TOUPPER PARENTESISIZQ <expresion> PARENTESISDER
+               | TOROUND PARENTESISIZQ <expresion> PARENTESISDER
+               | TOSTRING PARENTESISIZQ <expresion> PARENTESISDER
+               | PARENTESISIZQ <tipoDato> PARENTESISDER <expresion>
+               | <expresion> INTERRO <expresion> DPUNTOS <expresion>
+               | <expresion> PUNTO LENGTH PARENTESISIZQ PARENTESISDER
+               | <expresion> PUNTO C_STR PARENTESISIZQ PARENTESISDER
+               | ID CORCHETEIZQ <expresion> CORCHETEDER CORCHETEIZQ <expresion> CORCHETEDER
+               | ID CORCHETEIZQ <expresion> CORCHETEDER
+               | <llamada>
+
+<tipoDato> ::= INT
+              | DOUBLE
+              | CHAR
+              | BOOL
+              | STRING
+              | VOID
+
+<ifs> ::= IF PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER
+          | IF PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER <elses>
+
+<elses> ::= ELSE <ifs>
+           | ELSE LLAVEIZQ <instrucciones> LLAVEDER
+
+<whiles> ::= WHILE PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER
+
+<do_whiles> ::= DO LLAVEIZQ <instrucciones> LLAVEDER WHILE PARENTESISIZQ <expresion> PARENTESISDER PYC
+
+<forfuncional> ::= <declaracion_vars>
+                 | <asignacion_vars>
+
+<fors> ::= FOR PARENTESISIZQ <forfuncional> PYC <expresion> PYC <asignacion_vars> PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER
+
+<breaks> ::= BREAK
+
+<continues> ::= CONTINUE
+
+<retunrs> ::= RETURN
+             | RETURN <expresion>
+
+<switchs> ::= SWITCH PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <cases> <defaults> LLAVEDER
+             | SWITCH PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <cases> LLAVEDER
+             | SWITCH PARENTESISIZQ <expresion> PARENTESISDER LLAVEIZQ <defaults> LLAVEDER
+
+<cases> ::= <cases> <caso>
+           | <caso>
+
+<caso> ::= CASE <expresion> DPUNTOS <instrucciones>
+
+<defaults> ::= DEFAULT DPUNTOS <instrucciones>
+
+<metodos> ::= <tipoDato> ID PARENTESISIZQ <parametross> PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER
+            | <tipoDato> ID PARENTESISIZQ PARENTESISDER LLAVEIZQ <instrucciones> LLAVEDER
+
+<parametross> ::= <parametross> COMA <tipoDato> ID
+                 | <tipoDato> ID
+
+<execute> ::= EXECUTE ID PARENTESISIZQ <paramscall> PARENTESISDER
+            | EXECUTE ID PARENTESISIZQ PARENTESISDER
+
+<llamada> ::= ID PARENTESISIZQ <paramscall> PARENTESISDER
+             | ID PARENTESISIZQ PARENTESISDER
+
+<paramscall> ::= <paramscall> COMA <expresion>
+                | <expresion>
+
+<matrices> ::= <tipoDato> ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL CORCHETEIZQ <contenidomatrix> CORCHETEDER
+              | <tipoDato> ID CORCHETEIZQ CORCHETEDER CORCHETEIZQ CORCHETEDER IGUAL NEW <tipoDato> CORCHETEIZQ <expresion> CORCHETEDER CORCHETEIZQ <expresion> CORCHETEDER
+
+<arreglos> ::= <tipoDato> ID CORCHETEIZQ CORCHETEDER IGUAL CORCHETEIZQ <contenidoarreglo> CORCHETEDER
+              | <tipoDato> ID CORCHETEIZQ CORCHETEDER IGUAL NEW <tipoDato> CORCHETEIZQ <expresion> CORCHETEDER
+              | <tipoDato> ID CORCHETEIZQ CORCHETEDER IGUAL <expresion>
+
+<contenidoarreglo> ::= <contenidoarreglo> COMA <expresion>
+                       | <expresion>
+
+<contenidomatrix> ::= <contenidomatrix> COMA CORCHETEIZQ <contenidoarreglo> CORCHETEDER
+                      | CORCHETEIZQ <contenidoarreglo> CORCHETEDER

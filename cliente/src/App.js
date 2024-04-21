@@ -29,10 +29,69 @@ function App() {
         consolaRef.current.setValue(data.Respuesta);
       })
       .catch((error) => {
-        alert("Ya no sale comp1")
+        alert("Exitazo total")
         console.error('Error:', error);
       });
   }
+
+  function reporteSimbolos() {
+    var entrada = editorRef.current.getValue();
+    fetch('http://localhost:4000/tablasimbolos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ entrada: editorRef.current.getValue() }),
+    })
+      .then(response => response.blob())
+      .then(blob => {
+
+        const url = window.URL.createObjectURL(blob);
+        const   a = document.createElement('a');
+        a.href = url;
+        a.download = 'TABLA_SIMBOLOS.html';
+        a.click();
+      })
+      .catch((error) => {
+        alert("Exitazo total tambla simbolos")
+        console.error('Error:', error);
+      });
+  }
+
+  function reporteErrores() {
+    var entrada = editorRef.current.getValue();
+    fetch('http://localhost:4000/tablasimbolos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ entrada: editorRef.current.getValue() }),
+    })
+      .then(response => response.blob())
+      .then(blob => {
+
+        const url = window.URL.createObjectURL(blob);
+        const   a = document.createElement('a');
+        a.href = url;
+        a.download = 'reporteErrores.html';
+        a.click();
+      })
+      .catch((error) => {
+        alert("Exitazo total tambla simbolos")
+        console.error('Error:', error);
+      });
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   const CargarArchivo = (event) => {
     const file = event.target.files[0];
@@ -100,7 +159,7 @@ function App() {
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                 <li><label className="dropdown-item">
                     Nuevo Archivo
-                    <input type="file" style={{ display: "none" }} onChange={CrearArchivo} />
+                    <input type="file" style={{ display: "none" }} onChange={CrearArchivo} /> 
                   </label></li>
                   <li><label className="dropdown-item">
                     Abrir Archivo
@@ -120,9 +179,9 @@ function App() {
                   Reportes
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                  <li><a className="dropdown-item" href="#">Reporte de Errores</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={reporteErrores}>Reporte de Errores</a></li>
                   <li><a className="dropdown-item" href="#">Generar Arbol AST</a></li>
-                  <li><a className="dropdown-item" href="#">Reporte Tabla de Simbolos</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={reporteSimbolos}>Reporte Tabla de Simbolos</a></li>
                 </ul>
               </div>
             </div>
