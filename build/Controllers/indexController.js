@@ -8,6 +8,7 @@ const path_1 = __importDefault(require("path"));
 const Arbol_1 = __importDefault(require("./analisis/simbolo/Arbol"));
 const tablaSimbolos_1 = __importDefault(require("./analisis/simbolo/tablaSimbolos"));
 const Metodo_1 = __importDefault(require("./analisis/instrucciones/Metodo"));
+//import Metodo from './analisis/Metodoss/metodo';
 const Declaracion_1 = __importDefault(require("./analisis/instrucciones/Declaracion"));
 const Run_1 = __importDefault(require("./analisis/instrucciones/Run"));
 class controller {

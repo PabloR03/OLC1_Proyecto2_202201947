@@ -41,6 +41,11 @@ const Llamadoso                 = require('./instrucciones/Llamadoso')
 const Returnoso                 = require('./Transferencia.ts/retunrturn')
 const Executoso                 = require('./instrucciones/Execute')
 
+const metodon                   = require('./Metodoss/metodo')
+const llamadon                  = require('./Metodoss/llamada')
+const returnon                  = require('./Metodoss/return')
+const executon                  = require('./Metodoss/execute')
+
 
 
 %}
@@ -310,7 +315,7 @@ caso : CASE expresion DPUNTOS instrucciones { $$ = new Case.default($2, $4, @1.f
 defaults : DEFAULT DPUNTOS instrucciones { $$ = new Default.default($3, @1.first_line, @1.first_column) }
 ;
 
-
+/* */
 metodos : tipoDato ID PARENTESISIZQ parametross PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $7, @1.first_line, @1.first_column, $4); }
         | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodo.default($2, $1, $6, @1.first_line, @1.first_column); }
 ;
@@ -329,7 +334,29 @@ paramscall: paramscall COMA expresion { $1.push($3); $$ = $1; }
         | expresion { $$ = [$1]; }
 ;
 
+
+
 /*
+metodos : tipoDato ID PARENTESISIZQ parametross PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new metodon.default($2, $1, $4, $7, @1.first_line, @1.first_column); }
+        | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new metodon.default($2, $1, [], $6, @1.first_line, @1.first_column); }
+;
+parametross : parametross COMA tipoDato ID {$1.push({tipo:$3, id:[$4]}); $$ = [$1]; }
+        | tipoDato ID { $$ = [{tipo:$1, id:[$2]}] }
+;
+execute : EXECUTE ID PARENTESISIZQ paramscall PARENTESISDER     { $$ = new executon.default($2, $4, @1.first_line, @1.first_column); }
+        | EXECUTE ID PARENTESISIZQ PARENTESISDER                { $$ = new executon.default($2, [], @1.first_line, @1.first_column); }
+; 
+
+llamada : ID PARENTESISIZQ paramscall PARENTESISDER { $$ = new llamadon.default($1,$3, @1.first_line, @1.first_column); }
+        | ID PARENTESISIZQ PARENTESISDER { $$ = new llamadon.default($1, [], @1.first_line, @1.first_column); }
+;
+
+paramscall: paramscall COMA expresion { $1.push($3); $$ = $1; }
+        | expresion { $$ = [$1]; }
+;
+
+
+
 metodos : tipoDato ID PARENTESISIZQ parametross PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodoso.default($1, $2, $4, $7, @1.first_line, @1.first_column); }
         | tipoDato ID PARENTESISIZQ PARENTESISDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Metodoso.default($1, $2, [], $6, @1.first_line, @1.first_column); }
 ;

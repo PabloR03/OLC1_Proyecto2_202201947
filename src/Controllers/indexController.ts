@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import Arbol from './analisis/simbolo/Arbol';
 import tablaSimbolo from './analisis/simbolo/tablaSimbolos';
 import Metodo from './analisis/instrucciones/Metodo';
+//import Metodo from './analisis/Metodoss/metodo';
 import Declaracion from './analisis/instrucciones/Declaracion';
 import Run from './analisis/instrucciones/Run';
 
