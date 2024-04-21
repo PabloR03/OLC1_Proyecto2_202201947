@@ -3,13 +3,14 @@ import Simbolo from "./Simbolo";
 import Tipo, { tipoDato } from './Tipo'
 import SimboloA from "./SimboloAr";
 import SimboloM from "./SimboloMa";
+//import { Function } from "./funciones";
 
 export default class tablaSimbolo {
     private tablaAnterior: tablaSimbolo | any
     private tablaActual: Map<string, SimboloM|SimboloA|Simbolo>
     private nombre: string
 
-    constructor(anterior?: tablaSimbolo) {
+    constructor(public anterior?: tablaSimbolo) {
         this.tablaAnterior = anterior
         this.tablaActual = new Map<string, SimboloM|SimboloA|Simbolo>()
         this.nombre = ""
@@ -87,4 +88,19 @@ export default class tablaSimbolo {
     public setNombre(nombre: string): void {
         this.nombre = nombre
     }
+
+    //public getFunction(id: string): Function | undefined{
+    //    let env: tablaSimbolo | null = this;
+    //    while(env != null){
+    //        if(env.tablaActual.has(id)){
+    //            return env.tablaActual.get(id);
+    //        }
+    //        env = env.anterior;
+    //    }
+    //    return undefined;
+    //}
+//
+    //public saveFunction(id: string, func: Function){
+    //    this.tablaActual.set(id, func);
+    //}
 }
