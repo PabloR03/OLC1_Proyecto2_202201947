@@ -7,10 +7,14 @@ exports.indexController = void 0;
 const path_1 = __importDefault(require("path"));
 const Arbol_1 = __importDefault(require("./analisis/simbolo/Arbol"));
 const tablaSimbolos_1 = __importDefault(require("./analisis/simbolo/tablaSimbolos"));
-const Metodo_1 = __importDefault(require("./analisis/instrucciones/Metodo"));
+//import Metodo from './analisis/instrucciones/Metodo';
 //import Metodo from './analisis/Metodoss/metodo';
 const Declaracion_1 = __importDefault(require("./analisis/instrucciones/Declaracion"));
-const Run_1 = __importDefault(require("./analisis/instrucciones/Run"));
+const metodo_1 = __importDefault(require("./analisis/Metodoss/metodo"));
+const execute_1 = __importDefault(require("./analisis/Metodoss/execute"));
+//import Run from './analisis/instrucciones/Run';
+const DeclaracionA_1 = __importDefault(require("./analisis/dimenciones/DeclaracionA"));
+const DeclaracionM_1 = __importDefault(require("./analisis/dimenciones/DeclaracionM"));
 class controller {
     prueba(req, res) {
         res.json({ "funciona": "la api" });
@@ -30,7 +34,7 @@ class controller {
             //}
             let execute = null;
             for (let i of ast.getInstrucciones()) {
-                if (i instanceof Metodo_1.default) {
+                if (i instanceof metodo_1.default) {
                     i.id = i.id.toLocaleLowerCase();
                     ast.addFunciones(i);
                 }
@@ -38,7 +42,15 @@ class controller {
                     i.interpretar(ast, tabla);
                     // manejo de errores
                 }
-                if (i instanceof Run_1.default) {
+                if (i instanceof DeclaracionA_1.default) {
+                    i.interpretar(ast, tabla);
+                    // manejo de errores
+                }
+                if (i instanceof DeclaracionM_1.default) {
+                    i.interpretar(ast, tabla);
+                    // manejo de errores
+                }
+                if (i instanceof execute_1.default) {
                     execute = i;
                 }
             }

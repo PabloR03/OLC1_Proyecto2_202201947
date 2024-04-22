@@ -26,9 +26,9 @@ export default class FuncionesSTR extends Instruccion {
             case Funcion.C_STR:
                 return this.c_str(valor_unico, arbol)
             default:
-                let error = new Errores("Semántico", "Función ToLower Inválida", this.linea, this.col)
+                let error = new Errores("Semántico", "Función cStr Inválida", this.linea, this.col)
                 arbol.agregarError(error);
-                arbol.setConsola("Semántico: Función ToLower Inválida.\n")
+                arbol.setConsola("Semántico: Función cStr Inválida.\n")
                 return error
         }
     }
@@ -45,11 +45,14 @@ export default class FuncionesSTR extends Instruccion {
                 }
                 return arreglo
             default:
-                let error = new Errores("Semántico", "Función ToLower Inválida", this.linea, this.col)
+                let error = new Errores("Semántico", "Función cStr Inválida", this.linea, this.col)
                 arbol.agregarError(error);
-                arbol.setConsola("Semántico: Función ToLower Inválida.\n")
+                arbol.setConsola("Semántico: Función cStr Inválida.\n")
                 return error
         }
+    }
+    obtener_ast(anterior: string): string {
+        return ""
     }
 }
 

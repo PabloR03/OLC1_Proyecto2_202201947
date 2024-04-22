@@ -112,6 +112,9 @@ export default class FuncionesRound extends Instruccion {
                 return new Errores("Semántico", "Función TypeOf Inválida", this.linea, this.col)
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }
 
 

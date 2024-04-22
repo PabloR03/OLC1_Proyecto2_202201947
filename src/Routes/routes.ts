@@ -12,9 +12,9 @@ class router {
     config(): void {
         this.router.get('/', indexController.prueba);
         this.router.post('/interpretar', indexController.interpretar)
-        this.router.post('/errores', indexController.rerrores)
+        this.router.post('/rerrores', indexController.rerrores)
         this.router.post('/tablasimbolos', indexController.rtablasimbolos)
-
+        //this.router.post('/arbolast', indexController.rarbolast)
         // this.router.post('/reporte', indexController.reporteErrores)
     }
 }

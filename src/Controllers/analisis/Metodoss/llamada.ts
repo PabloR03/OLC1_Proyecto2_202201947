@@ -17,132 +17,88 @@ export default class Llamada extends Instruccion {
         this.id = id;
         this.parametros = parametros;
     }
-
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
-        let busqueda = arbol.getFuncion(this.id.toLocaleLowerCase());
-        if (busqueda == null) {
-            arbol.Print(`Error Semántico: No existe la función ${this.id}. Linea: ${this.linea} Columna: ${(this.col + 1)}`);
-            return new Errores('Semántico', `No existe la función ${this.id}`, this.linea, this.col);
+        let busqueda_funcion = arbol.getFuncion(this.id);
+        if (busqueda_funcion == null) {
+            let error = new Errores("Semántico", "No Existe La Función: "+ this.id, this.linea, this.col)
+            arbol.agregarError(error);
+            arbol.setConsola("Semántico: No Existe La Función: "+ this.id+".\n")
+            return error 
         }
-        this.tipoDato.setTipo(busqueda.tipoDato.getTipo());
-        if (busqueda instanceof Metodo) {
+        this.tipoDato.setTipo(busqueda_funcion.tipo.getTipo());
+        if (busqueda_funcion instanceof Metodo) {
+            if (busqueda_funcion.tipo.getTipo() == tipoDato.VOID) {
 
-            if (busqueda.tipo.getTipo() == tipoDato.VOID) {
-                let nuevaTabla = new tablaSimbolo(tabla);
-                nuevaTabla.setNombre("Llamada metodo " + this.id);
-                if (busqueda.parametros.length != this.parametros.length) {
-                    arbol.Print(`Error Semántico: La cantidad de parametros no coincide con la función ${this.id}. Linea: ${this.linea} Columna: ${(this.col + 1)}`);
-                    return new Errores('Semántico', `La cantidad de parametros no coincide con la función ${this.id}`, this.linea, this.col);
+                let nueva_tabla = new tablaSimbolo(tabla);
+                nueva_tabla.setNombre(this.id)
+                arbol.agregarTabla(nueva_tabla)
+                
+                if (busqueda_funcion.parametros.length != this.parametros.length) {
+                    let error = new Errores("Semántico", "Cantidad De Parámetros Inválida: "+ this.id, this.linea, this.col)
+                    arbol.agregarError(error)
+                    arbol.setConsola("Semántico: Cantidad De Parámetros Inválida: "+ this.id+".\n")
+                    return error 
                 }
-
-                for (let i = 0; i < busqueda.parametros.length; i++) {
-                    let daclaraParam = new Declaracion(busqueda.parametros[i].tipo, this.linea, this.col, [busqueda.parametros[i].id], this.parametros[i]);
-
-                    let result:any = daclaraParam.interpretar(arbol, nuevaTabla);
-
-                    if (result instanceof Errores) return result;
+                for (let i = 0; i < busqueda_funcion.parametros.length; i++) {
+                    let declaracion_parametro = new Declaracion(
+                        busqueda_funcion.parametros[i].tipo, 
+                        this.linea, 
+                        this.col, 
+                        busqueda_funcion.parametros[i].id, 
+                        this.parametros[i]
+                    );
+                    let resultado:any = declaracion_parametro.interpretar(arbol, nueva_tabla);
+                    if (resultado instanceof Errores) return resultado;
                 }
-
-                let resultFunc: any = busqueda.interpretar(arbol, nuevaTabla);
-                if (resultFunc instanceof Errores) return resultFunc;
-
+                let resultado_funcion: any = busqueda_funcion.interpretar(arbol, nueva_tabla);
+                if (resultado_funcion instanceof Errores) return resultado_funcion;
             } else {
 
-                let nuevaTabla = new tablaSimbolo(tabla);
-                nuevaTabla.setNombre("Llamada función " + this.id);
-                if (busqueda.parametros.length != this.parametros.length) {
-                    arbol.Print(`Error Semántico: La cantidad de parametros no coincide con la función ${this.id}. Linea: ${this.linea} Columna: ${(this.col + 1)}`);
-                    return new Errores('Semántico', `La cantidad de parametros no coincide con la función ${this.id}`, this.linea, this.col);
+                let nueva_tabla = new tablaSimbolo(tabla);
+                nueva_tabla.setNombre(this.id);
+                arbol.agregarTabla(nueva_tabla)
+
+                if (busqueda_funcion.parametros.length != this.parametros.length) {
+                    let error = new Errores("Semántico", "Cantidad De Parámetros Inválida: "+ this.id, this.linea, this.col)
+                    arbol.agregarError(error)
+                    arbol.setConsola("Semántico: Cantidad De Parámetros Inválida: "+ this.id+".\n")
+                    return error 
                 }
+                for (let i = 0; i < busqueda_funcion.parametros.length; i++) {
+                    let nueva_variable = this.parametros[i].interpretar(arbol, nueva_tabla);
+                    let declaracion_parametro = new Declaracion(
+                        busqueda_funcion.parametros[i].tipo, 
+                        this.linea, this.col, 
+                        busqueda_funcion.parametros[i].id, 
+                        this.parametros[i]
+                    );
+                    let resultado:any = declaracion_parametro.interpretar(arbol, nueva_tabla);
+                    if (resultado instanceof Errores) return resultado
+                    let variable_interpretada = nueva_tabla.getVariable(busqueda_funcion.parametros[i].id[0])
 
-                for (let i = 0; i < busqueda.parametros.length; i++) {
-                    let nuevaVar = this.parametros[i].interpretar(arbol, nuevaTabla);
-                    let daclaraParam = new Declaracion(busqueda.parametros[i].tipo, this.linea, this.col, [busqueda.parametros[i].id[0]], this.parametros[i]);
-
-                    let result : any = daclaraParam.interpretar(arbol, nuevaTabla);
-
-                    if (result instanceof Errores) return result;
-
-                    
-                    console.log("la nuevaVar es: "+nuevaVar);
-                    let varInterpretada = nuevaTabla.getVariable(busqueda.parametros[i].id[0]);
-
-                    if(varInterpretada != null){
-                        if(busqueda.parametros[i].tipo.getTipo() != varInterpretada.getTipo().getTipo()){
-                            arbol.Print(`Error Semántico: El tipo de parametro ${i} no coincide con la función ${this.id}. Linea: ${this.linea} Columna: ${(this.col + 1)}`);
-                            return new Errores('Semántico', `El tipo de parametro ${i} no coincide con la función ${this.id}`, this.linea, this.col);
+                    if(variable_interpretada != null){
+                        if(busqueda_funcion.parametros[i].tipo.getTipo() != variable_interpretada.getTipo().getTipo()){
+                            let error = new Errores("Semántico", "Cantidad De Parámetros Inválida: "+ this.id, this.linea, this.col)
+                            arbol.agregarError(error)
+                            arbol.setConsola("Semántico: Cantidad De Parámetros Inválida: "+ this.id+".\n")
+                            return error 
                         }else{
-                            varInterpretada.setValor(nuevaVar);  
-                            //console.log("la var interpretada es:"+varInterpretada.getValor());
+                            variable_interpretada.setValor(nueva_variable);  
                         }
                     }else{
-                        arbol.Print(`Error Semántico: El parametro ${i} no coincide con la función ${this.id}. Linea: ${this.linea} Columna: ${(this.col + 1)}`);
-                        return new Errores('Semántico', `El parametro ${i} no coincide con la función ${this.id}`, this.linea, this.col);
+                        let error = new Errores("Semántico", "Cantidad De Parámetros Inválida: "+ this.id, this.linea, this.col)
+                        arbol.agregarError(error)
+                        arbol.setConsola("Semántico: Cantidad De Parámetros Inválida: "+ this.id+".\n")
+                        return error 
                     }
-
                 }
-
-                let resultFunc: any = busqueda.interpretar(arbol, nuevaTabla);
-                if (resultFunc instanceof Errores) return resultFunc;
-                //this.tipoDato.setTipo(busqueda.valorRetorno.tipoDato.getTipo());
-                //console.log("el valor de retorno es:",busqueda.valorRetorno.tipoDato.getTipo());
-                //this.tipoDato.setTipo(busqueda.valorRetorno.tipoDato.getTipo());
-                return busqueda.valorRetorno.interpretar(arbol, nuevaTabla);
-
-
+                let resultado_funcion: any = busqueda_funcion.interpretar(arbol, nueva_tabla)
+                if (resultado_funcion instanceof Errores) return resultado_funcion
+                return busqueda_funcion.valor_retorno.interpretar(arbol, nueva_tabla)
             }
-
-
         }
-
     }
-
-    //obtenerAST(anterior: string): string {
-//
-    //    let contador = ContadorSingleton.getInstance();
-    //    let result = "";
-//
-    //    let llamada = `n${contador.getContador()}`;
-    //    let ident = `n${contador.getContador()}`;
-    //    let par1 = `n${contador.getContador()}`;
-    //    let puntocoma = `n${contador.getContador()}`;
-//
-    //    let arrayParametros = [];
-//
-    //    for (let i = 0; i < this.parametros.length; i++) {
-    //        arrayParametros.push(`n${contador.getContador()}`);
-    //    }
-//
-    //    let par2 = `n${contador.getContador()}`;
-//
-    //    result += `${llamada}[label="Llamada"];\n`;
-    //    result += `${ident}[label="${this.id}"];\n`;
-    //    result += `${par1}[label="("];\n`;
-//
-    //    for(let i = 0; i < this.parametros.length; i++){
-    //        result += `${arrayParametros[i]}[label="Parametro"];\n`;
-    //    }
-//
-    //    result += `${par2}[label=")"];\n`;
-    //    result += `${puntocoma}[label=";"];\n`
-//
-//
-    //    result += `${anterior} -> ${llamada};\n`;
-    //    result += `${llamada} -> ${ident};\n`;
-    //    result += `${llamada} -> ${par1};\n`;
-//
-    //    for(let i = 0; i < this.parametros.length; i++){
-    //        result += `${llamada} -> ${arrayParametros[i]};\n`;
-    //    }
-//
-    //    result += `${llamada} -> ${par2};\n`;
-    //    result += `${llamada} -> ${puntocoma};\n`;
-    //    
-    //    for(let i = 0; i < this.parametros.length; i++){
-    //        result += this.parametros[i].obtenerAST(arrayParametros[i]);
-    //    }
-//
-    //    return result;
-    //}
-
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

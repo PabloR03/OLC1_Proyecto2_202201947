@@ -92,6 +92,9 @@ export default class OperadoresLogicos extends Instruccion {
                 return new Errores("Semántico", "Operación Not Inválida", this.linea, this.col)
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }
 
 export enum OperadorLogico {

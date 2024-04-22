@@ -37,4 +37,7 @@ export default class AsignacionMatriz extends Instruccion {
         this.tipoDato = valor.getTipo()
         valor.setValores(posicion1, nuevo_valor)
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

@@ -17,4 +17,7 @@ export default class Print extends Instruccion {
         if (valor instanceof Errores) return valor
         arbol.Print(valor)
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 } 

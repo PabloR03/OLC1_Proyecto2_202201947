@@ -37,4 +37,7 @@ export default class IncrementoDeremento extends Instruccion {
         let valor = tipo == tipoDato.ENTERO ? parseInt(valor_variable.getValor()) : parseFloat(valor_variable.getValor());
         valor_variable.setValor(valor + incremento);
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

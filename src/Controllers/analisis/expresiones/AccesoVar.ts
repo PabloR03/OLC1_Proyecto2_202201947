@@ -29,4 +29,7 @@ export default class AccesoVar extends Instruccion {
             console.error(error);
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

@@ -114,4 +114,7 @@ export default class DeclaracionMatriz extends Instruccion {
             return error
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

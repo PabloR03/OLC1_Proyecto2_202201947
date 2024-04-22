@@ -11,4 +11,7 @@ export default class Break extends Instruccion {
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
         return;
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

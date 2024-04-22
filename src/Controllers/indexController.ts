@@ -2,11 +2,18 @@ import path from 'path';
 import { Request, Response } from 'express';
 import Arbol from './analisis/simbolo/Arbol';
 import tablaSimbolo from './analisis/simbolo/tablaSimbolos';
-import Metodo from './analisis/instrucciones/Metodo';
+//import Metodo from './analisis/instrucciones/Metodo';
 //import Metodo from './analisis/Metodoss/metodo';
 import Declaracion from './analisis/instrucciones/Declaracion';
-import Run from './analisis/instrucciones/Run';
+import Metodo from './analisis/Metodoss/metodo';
+import Execute from './analisis/Metodoss/execute';
+//import Run from './analisis/instrucciones/Run';
 
+import DeclaracionArreglo from './analisis/dimenciones/DeclaracionA';
+import DeclaracionMatriz from './analisis/dimenciones/DeclaracionM';
+import * as fs from 'fs';
+import Errores from './analisis/excepciones/Errores';
+import Singleton from './analisis/simbolo/singleton';
 
 class controller {
     public prueba(req: Request, res: Response) {
@@ -36,7 +43,15 @@ class controller {
                     i.interpretar(ast, tabla)
                     // manejo de errores
                 }
-                if (i instanceof Run){
+                if(i instanceof DeclaracionArreglo){
+                    i.interpretar(ast, tabla)
+                    // manejo de errores
+                }
+                if(i instanceof DeclaracionMatriz){
+                    i.interpretar(ast, tabla)
+                    // manejo de errores
+                }
+                if (i instanceof Execute){
                     execute = i
                 }
             }

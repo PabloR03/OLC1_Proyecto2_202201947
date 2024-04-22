@@ -57,10 +57,10 @@ function App() {
         console.error('Error:', error);
       });
   }
-
+  
   function reporteErrores() {
     var entrada = editorRef.current.getValue();
-    fetch('http://localhost:4000/tablasimbolos', {
+    fetch('http://localhost:4000/rerrores', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,16 +81,6 @@ function App() {
         console.error('Error:', error);
       });
   }
-
-
-
-
-
-
-
-
-
-
 
 
   const CargarArchivo = (event) => {

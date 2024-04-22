@@ -43,4 +43,7 @@ export default class OpTernario extends Instruccion{
             return exp2;
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

@@ -2,7 +2,8 @@ import tablaSimbolo from "./tablaSimbolos";
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import fs from 'fs';
-import Metodo from "../instrucciones/Metodo";
+import Metodo from "../Metodoss/metodo";
+//import Metodo from "../instrucciones/Metodo";
 
 export default class Arbol {
     private instrucciones: Array<Instruccion>

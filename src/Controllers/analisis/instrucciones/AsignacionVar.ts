@@ -33,7 +33,8 @@ export default class AsignacionVar extends Instruccion {
         }
         this.tipoDato = valor.getTipo()
         valor.setValor(NewValor)
-
-
+    }
+    obtener_ast(anterior: string): string {
+        return ""
     }
 }

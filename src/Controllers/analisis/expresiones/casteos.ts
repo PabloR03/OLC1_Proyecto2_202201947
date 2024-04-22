@@ -88,5 +88,7 @@ export default class Casteo extends Instruccion {
                 return new Errores("Error Semantico", "No se puede castear el valor", this.linea, this.col)
         }
     }
-
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

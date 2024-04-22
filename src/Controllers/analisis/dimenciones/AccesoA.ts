@@ -27,4 +27,7 @@ export default class AccesoMatriz extends Instruccion {
         this.tipoDato = valor_variable.getTipo()
         return valor_variable.getValores(posicion1)
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }

@@ -57,6 +57,9 @@ export default class FuncionesLenght extends Instruccion {
                 return error
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 }
 
 export enum Funcion {

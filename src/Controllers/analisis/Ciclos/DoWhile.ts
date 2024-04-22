@@ -5,6 +5,7 @@ import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
 import Continue from "../Transferencia.ts/Continue";
+import Return from "../Transferencia.ts/Return";
 
 export default class DoWhile extends Instruccion {
     private condicion: Instruccion
@@ -23,23 +24,32 @@ export default class DoWhile extends Instruccion {
         if (this.condicion.tipoDato.getTipo() != tipoDato.BOOL) {
             let error = new Errores("Semántico", "Condición Debe Ser Del Tipo Booleana", this.linea, this.col)
             arbol.agregarError(error);
-            arbol.setConsola("Semántico: Condición Debe Ser Del Tipo Booleana")
+            arbol.setConsola("Semántico: Condición Debe Ser Del Tipo Booleana.\n")
             return error
         }
 
         let nueva_tabla = new tablaSimbolo(tabla)
         nueva_tabla.setNombre("DoWhile")
+        arbol.agregarTabla(nueva_tabla)
 
         do {
             for (let ins of this.bloque) {
-                if (ins instanceof Break) return;
-                if (ins instanceof Continue) break;
+                if(ins instanceof Break) return ins
+                if(ins instanceof Continue) return ins
+                if(ins instanceof Return) return ins
+                if(ins instanceof Errores) return ins
             
                 let resultado = ins.interpretar(arbol, nueva_tabla)
             
-                if (resultado instanceof Break) return;
-                if (resultado instanceof Continue) break;
+                if(resultado instanceof Break) return resultado
+                if(resultado instanceof Continue) return resultado
+                if(resultado instanceof Return) return resultado
+                if(resultado instanceof Errores) return resultado
             }
         } while (this.condicion.interpretar(arbol, tabla));
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
+    
 }

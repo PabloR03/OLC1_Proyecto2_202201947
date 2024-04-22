@@ -515,6 +515,9 @@ export default class Aritmeticas extends Instruccion {
                 return new Errores("Semántico", "Operación Negación Unaria Inválida", this.linea, this.col)
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 
 
 }

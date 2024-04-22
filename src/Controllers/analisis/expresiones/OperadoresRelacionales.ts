@@ -1132,6 +1132,9 @@ export default class OperadorRelacional extends Instruccion {
                 return new Errores("Semantico", "OPERADOR MENOR QUE INVALIDO", this.linea, this.col)
         }
     }
+    obtener_ast(anterior: string): string {
+        return ""
+    }
 
    // ternarios(valor_izquierda: any, valor_derecha:any) {
    //     let tipo1 = this.operando_izquierda?.tipoDato.getTipo()

@@ -1,54 +1,57 @@
-//import { lista_errores } from "../../controllers/index.controller";
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
-import Simbolo from "../simbolo/Simbolo";
-import TablaSimbolos from "../simbolo/tablaSimbolos";
+import TablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
 import Continue from "../Transferencia.ts/Continue";
+import Return from "../Transferencia.ts/Return";
 import Case from "./Case";
-import Default from "./Default";
 
 export default class Switch extends Instruccion {
-    private condicion: Instruccion
-    private casos: Case[] | undefined
-    private default_: Instruccion | undefined
+    private condicion_switch: Instruccion
+    private opcion_case: Case[] | undefined
+    private opcion_default: Instruccion | undefined
 
-    constructor(condicion: Instruccion, linea: number, col: number, casos: Case[], defecto: Instruccion) {
+    constructor(condicion_switch: Instruccion, linea: number, col: number, opcion_case: Case[], opcion_default: Instruccion) {
         super(new Tipo(tipoDato.VOID), linea, col)
-        this.condicion = condicion
-        this.casos = casos
-        this.default_ = defecto
+        this.condicion_switch = condicion_switch
+        this.opcion_case = opcion_case
+        this.opcion_default = opcion_default
     }
 
-    interpretar(arbol: Arbol, tabla: TablaSimbolos) {
-        let condi = this.condicion.interpretar(arbol, tabla)
-
-        if(condi instanceof Errores) return condi
-
-        if(this.casos != undefined) {
-            for(let caso of this.casos) {
-                caso.condicionCase = this.condicion
+    interpretar(arbol: Arbol, tabla: TablaSimbolo) {
+        let condicion = this.condicion_switch.interpretar(arbol, tabla)
+        if(condicion instanceof Errores) return condicion
+        if(this.opcion_case != undefined) {
+            for(let caso of this.opcion_case) {
+                caso.condicional_case = this.condicion_switch
                 let resultado = caso.interpretar(arbol, tabla)
-
-                    if( resultado instanceof Errores) {
-                        //lista_errores.push(resultado)
-                        //arbol.actualizarConsola((<Errores>resultado).obtenerError())
-                    }
-
+                    if( resultado instanceof Errores) return resultado
                     if(resultado instanceof Break) return
-
-                    if(resultado instanceof Continue) return new Errores("Semantico", "Continue no esta en un ciclo", this.linea, this.col)
+                    if(resultado instanceof Return) return resultado
+                    if(resultado instanceof Continue){
+                        let error = new Errores("Semántico", "La función continue no es parte del switch.", this.linea, this.col)
+                        arbol.agregarError(error);
+                        arbol.setConsola("Semántico: La función continue no es parte del switch.\n")
+                        return error
+                    }
             }
         }
-
-        if(this.default_ != undefined) {
-            let defecto = this.default_.interpretar(arbol, tabla)
-            if(defecto instanceof Break) return
-            if(defecto instanceof Continue) return new Errores("Semantico", "Continue no esta en un ciclo", this.linea, this.col)
-            if( defecto instanceof Errores) return defecto
+        if(this.opcion_default != undefined) {
+            let condicion_default = this.opcion_default.interpretar(arbol, tabla)
+            if(condicion_default instanceof Break) return
+            if(condicion_default instanceof Return) return condicion_default
+            if(condicion_default instanceof Continue){
+                let error = new Errores("Semántico", "La función continue no es parte del switch.", this.linea, this.col)
+                arbol.agregarError(error);
+                arbol.setConsola("Semántico: La función continue no es parte del switch.\n")
+                return error
+            }
+            if( condicion_default instanceof Errores) return condicion_default
         }
-
+    }
+    obtener_ast(anterior: string): string {
+        return ""
     }
 }
