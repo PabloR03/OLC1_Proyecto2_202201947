@@ -3,6 +3,7 @@ import Arbol from "../simbolo/Arbol";
 import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Errores from "../excepciones/Errores";
+import Singleton from "../simbolo/singleton";
 
 export default class Print extends Instruccion {
     private expresion: Instruccion
@@ -18,6 +19,21 @@ export default class Print extends Instruccion {
         arbol.Print(valor)
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let dot = "";
+        let contador = Singleton.getInstancia();
+        let cout = `n${contador.getCount()}`;
+        let menor_menor = `n${contador.getCount()}`;
+        let expresion_node = `n${contador.getCount()}`;
+        let punto_coma = `n${contador.getCount()}`;
+        dot += `${cout}[label="cout" color = \"#e7e7dd\"];\n`;
+        dot += `${menor_menor}[label="<<" color = \"#e7e7dd\"];\n`;
+        dot += `${expresion_node}[label="EXPRESION" color = \"#e7e7dd\"];\n`;
+        dot += `${punto_coma}[label=";" color = \"#e7e7dd\"];\n`;
+        dot += `${anterior} -> ${cout};\n`;
+        dot += `${anterior} -> ${menor_menor};\n`;
+        dot += `${anterior} -> ${expresion_node};\n`;
+        dot += `${anterior} -> ${punto_coma};\n`;
+        dot += this.expresion.obtener_ast(expresion_node);
+        return dot;
     }
 } 

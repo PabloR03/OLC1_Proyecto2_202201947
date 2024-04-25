@@ -5,6 +5,7 @@ import Arbol from "../simbolo/Arbol";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Metodo from "./metodo";
 import Declaracion from "../instrucciones/Declaracion";
+import Singleton from "../simbolo/singleton";
 //import ContadorSingleton from "../simbolo/contadorSingleton";
 
 export default class Llamada extends Instruccion {
@@ -99,6 +100,36 @@ export default class Llamada extends Instruccion {
         }
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia()
+        let dot = ""
+        let llamada = `n${contador.getCount()}`
+        let identificador = `n${contador.getCount()}`
+        let parentesis_izquierdo = `n${contador.getCount()}`
+        let puntocoma = `n${contador.getCount()}`
+        let lista_parametros = [];
+        for (let i = 0; i < this.parametros.length; i++) {
+            lista_parametros.push(`n${contador.getCount()}`)
+        }
+        let parentesis_derecho = `n${contador.getCount()}`
+        dot += `${llamada}[label="LLAMADA" color = \"#f4f1ba\"];\n`
+        dot += `${identificador}[label="${this.id}" color = \"#f4f1ba\"];\n`
+        dot += `${parentesis_izquierdo}[label="(" color = \"#f4f1ba\"];\n`
+        for(let i = 0; i < this.parametros.length; i++){
+            dot += `${lista_parametros[i]}[label="PARAMETRO" color = \"#f4f1ba\"];\n`;
+        }
+        dot += `${parentesis_derecho}[label=")" color = \"#f4f1ba\"];\n`
+        dot += `${puntocoma}[label=";" color = \"#f4f1ba\"];\n`
+        dot += `${anterior} -> ${llamada};\n`
+        dot += `${llamada} -> ${identificador};\n`
+        dot += `${llamada} -> ${parentesis_izquierdo};\n`
+        for(let i = 0; i < this.parametros.length; i++){
+            dot += `${llamada} -> ${lista_parametros[i]};\n`
+        }
+        dot += `${llamada} -> ${parentesis_derecho};\n`
+        dot += `${llamada} -> ${puntocoma};\n`
+        for(let i = 0; i < this.parametros.length; i++){
+            dot += this.parametros[i].obtener_ast(lista_parametros[i])
+        }
+        return dot
     }
 }

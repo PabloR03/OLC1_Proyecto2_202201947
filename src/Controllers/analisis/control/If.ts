@@ -1,6 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
+import Singleton from "../simbolo/singleton";
 import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
@@ -64,6 +65,72 @@ export default class Else extends Instruccion {
         }
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia();
+        let dot = "";
+        let lista_instruccion1 = [];
+        let lista_instruccion2 = [];
+        let control_if = `n${contador.getCount()}`;
+        let parentesis_izquierdo = `n${contador.getCount()}`;
+        let condicion = `n${contador.getCount()}`;
+        let parentesis_derecho = `n${contador.getCount()}`;
+        let llave_izquierda = `n${contador.getCount()}`;
+        let raiz_if = `n${contador.getCount()}`;
+        for(let i = 0; i < this.bloque_1.length; i++){
+            lista_instruccion1.push(`n${contador.getCount()}`);
+        }
+        let llave_derecha = `n${contador.getCount()}`;
+        if(this.bloque_2 != undefined){
+            let control_else = `n${contador.getCount()}`;
+            let llave_izquierda1 = `n${contador.getCount()}`;
+            let raiz_else = `n${contador.getCount()}`;
+            for(let i = 0; i < this.bloque_2.length; i++){
+                lista_instruccion2.push(`n${contador.getCount()}`);
+            }
+            let llave_derecha1 = `n${contador.getCount()}`;
+            dot += `${control_else}[label="ELSE IF/ELSE"];\n`;
+            dot += `${llave_izquierda1}[label="{"];\n`;
+            dot += `${raiz_else}[label="INSTRUCCIONES"];\n`;
+            for(let i = 0; i < lista_instruccion2.length; i++){
+                dot += `${lista_instruccion2[i]}[label="INSTRUCCION"];\n`;
+            }
+            dot += `${llave_derecha1}[label="}"];\n`;
+            dot += `${anterior} -> ${control_else};\n`;
+            dot += `${anterior} -> ${llave_izquierda1};\n`;
+            dot += `${anterior} -> ${raiz_else};\n`;
+            for(let i = 0; i < lista_instruccion2.length; i++){
+                dot += `${raiz_else} -> ${lista_instruccion2[i]};\n`;
+            }
+            dot += `${anterior} -> ${llave_derecha1};\n`;
+        }
+        dot += `${control_if}[label="IF"];\n`;
+        dot += `${parentesis_izquierdo}[label="("];\n`;
+        dot += `${condicion}[label="EXPRESION"];\n`;
+        dot += `${parentesis_derecho}[label=")"];\n`;
+        dot += `${llave_izquierda}[label="{"];\n`;
+        dot += `${raiz_if}[label="INSTRUCCIONES"];\n`;
+        for(let i = 0; i < lista_instruccion1.length; i++){
+            dot += `${lista_instruccion1[i]}[label="INSTRUCCION"];\n`;
+        }
+        dot += `${llave_derecha}[label="}"];\n`;
+        dot += `${anterior} -> ${control_if};\n`;
+        dot += `${anterior} -> ${parentesis_izquierdo};\n`;
+        dot += `${anterior} -> ${condicion};\n`;
+        dot += `${anterior} -> ${parentesis_derecho};\n`;
+        dot += `${anterior} -> ${llave_izquierda};\n`;
+        dot += `${anterior} -> ${raiz_if};\n`;
+        for(let i = 0; i < lista_instruccion1.length; i++){
+            dot += `${raiz_if} -> ${lista_instruccion1[i]};\n`;
+        }
+        dot += `${anterior} -> ${llave_derecha};\n`;
+        dot += this.condicion.obtener_ast(condicion);
+        for(let i = 0; i < this.bloque_1.length; i++){
+            dot += this.bloque_1[i].obtener_ast(lista_instruccion1[i]);
+        }
+        if(this.bloque_2 != undefined){
+            for(let i = 0; i < this.bloque_2.length; i++){
+                dot += this.bloque_2[i].obtener_ast(lista_instruccion2[i]);
+            }
+        }
+        return dot;
     }
 }

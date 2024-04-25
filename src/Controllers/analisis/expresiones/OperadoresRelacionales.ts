@@ -1,6 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
+import Singleton from "../simbolo/singleton";
 import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 
@@ -51,7 +52,7 @@ export default class OperadorRelacional extends Instruccion {
             //case OperadoresRelacionales.OPERARTERNARIO:
             //    return this.operarternario(valor_izquierda, valor_derecha)
             default:
-                return new Errores("Semantico", "Operador Relacional Invalido", this.linea, this.col)
+                return new Errores("Semantico", "OperadoresRelacionales Relacional Invalido", this.linea, this.col)
         }
     }
 
@@ -1133,7 +1134,82 @@ export default class OperadorRelacional extends Instruccion {
         }
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia();
+        let dot =""
+        if(this.operacion == OperadoresRelacionales.IGUALIGUAL){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = "=="];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }else if(this.operacion == OperadoresRelacionales.DISTINTO){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = "!="];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }else if(this.operacion == OperadoresRelacionales.MAYORQUE){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = ">"];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }else if(this.operacion == OperadoresRelacionales.MENORQUE){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = "<"];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }else if(this.operacion == OperadoresRelacionales.MAYORIGUAL){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = ">="];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }else if(this.operacion == OperadoresRelacionales.MENORIGUAL){
+            let nodo_expresion1 = `n${contador.getCount()}`
+            let nodo_expresion2 = `n${contador.getCount()}`
+            let nodo_operacion = `n${contador.getCount()}`
+            dot += `${nodo_expresion1}[label = "EXPRESION"];\n`
+            dot += `${nodo_operacion}[label = "<="];\n`
+            dot += `${nodo_expresion2}[label = "EXPRESION"];\n`
+            dot += `${anterior} -> ${nodo_expresion1};\n`
+            dot += `${anterior} -> ${nodo_operacion};\n`
+            dot += `${anterior} -> ${nodo_expresion2};\n`
+            dot += this.operando_izquierda?.obtener_ast(nodo_expresion1)
+            dot += this.operando_derecha?.obtener_ast(nodo_expresion2)
+        }
+        return dot;
     }
 
    // ternarios(valor_izquierda: any, valor_derecha:any) {

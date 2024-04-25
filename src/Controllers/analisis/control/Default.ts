@@ -1,6 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
+import Singleton from "../simbolo/singleton";
 import TablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
@@ -36,6 +37,30 @@ export default class Default extends Instruccion {
         }
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia();
+        let dot = "";
+        let instruccion_default = `n${contador.getCount()}`;
+        let dos_puntos = `n${contador.getCount()}`;
+        let raiz_instrucciones = `n${contador.getCount()}`;
+        let lista_instrucciones = [];
+        for(let i = 0; i < this.instrucciones.length; i++){
+            lista_instrucciones.push(`n${contador.getCount()}`);
+        }
+        dot += `${instruccion_default}[label="DEFAULT"];\n`;
+        dot += `${dos_puntos}[label=":"];\n`;
+        dot += `${raiz_instrucciones}[label="INSTRUCCIONES"];\n`;
+        for(let i = 0; i < this.instrucciones.length; i++){
+            dot += `${lista_instrucciones[i]}[label="INSTRUCCION"];\n`;
+        }
+        dot += `${anterior} -> ${instruccion_default};\n`;
+        dot += `${anterior} -> ${dos_puntos};\n`;
+        dot += `${anterior} -> ${raiz_instrucciones};\n`;
+        for(let i = 0; i < this.instrucciones.length; i++){
+            dot += `${raiz_instrucciones} -> ${lista_instrucciones[i]};\n`;
+        }
+        for(let i = 0; i < this.instrucciones.length; i++){
+            dot += this.instrucciones[i].obtener_ast(lista_instrucciones[i]);
+        }
+        return dot;
     }
 }

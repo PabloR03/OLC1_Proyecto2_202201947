@@ -5,6 +5,7 @@ import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Declaracion from "../instrucciones/Declaracion";
 import Metodo from "./metodo";
+import Singleton from "../simbolo/singleton";
 
 export default class Execute extends Instruccion {
 
@@ -52,6 +53,39 @@ export default class Execute extends Instruccion {
         }
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia()
+        let dot = ""
+        let execute = `n${contador.getCount()}`
+        let identificador = `n${contador.getCount()}`
+        let parentesis_izquierdo = `n${contador.getCount()}`
+        let lista_parametros = `n${contador.getCount()}`
+        let contador_parametros = []
+        for (let i = 0; i < this.parametros.length; i++) {
+            contador_parametros.push(`n${contador.getCount()}`)
+        }
+        let parentesis_derecho = `n${contador.getCount()}`
+        let punto_coma = `n${contador.getCount()}`
+        dot += `${execute}[label="EXECUTE" color = \"#37c9c6\"];\n`
+        dot += `${identificador}[label="${this.id}" color = \"#37c9c6\"];\n`
+        dot += `${parentesis_izquierdo}[label="(" color = \"#37c9c6\"];\n`
+        dot += `${lista_parametros}[label="PARAMETROS" color = \"#37c9c6\"];\n`
+        dot += `${parentesis_derecho}[label=")" color = \"#37c9c6\"];\n`
+        dot += `${punto_coma}[label=";" color = \"#37c9c6\"];\n`
+        for(let i = 0; i < this.parametros.length; i++){
+            dot += `${contador_parametros[i]}[label="EXPRESION" color = \"#37c9c6\"];\n`
+        }
+        dot += `${anterior} -> ${execute};\n`
+        dot += `${anterior} -> ${identificador};\n`;
+        dot += `${anterior} -> ${parentesis_izquierdo};\n`
+        dot += `${anterior} -> ${lista_parametros};\n`
+        for(let i = 0; i < this.parametros.length; i++){
+            dot += `${lista_parametros} -> ${contador_parametros[i]};\n`
+        }
+        dot += `${anterior} -> ${parentesis_derecho};\n`
+        dot += `${anterior} -> ${punto_coma};\n`
+        for (let i = 0; i < this.parametros.length; i++) {
+            dot += this.parametros[i].obtener_ast(contador_parametros[i])
+        }
+        return dot
     }
 }

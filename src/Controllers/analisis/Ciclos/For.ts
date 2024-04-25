@@ -1,6 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
+import Singleton from "../simbolo/singleton";
 import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
@@ -64,6 +65,54 @@ export default class For extends Instruccion {
         
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia();
+        let dot = "";
+        let lista_instrucciones = [];
+        let raiz = `n${contador.getCount()}`;
+        let instruccion_for = `n${contador.getCount()}`;
+        let parentesis_izquierdo = `n${contador.getCount()}`;
+        let declaracion = `n${contador.getCount()}`;
+        let condicion_for = `n${contador.getCount()}`;
+        let actualizacion = `n${contador.getCount()}`;
+        let parentesis_derecho = `n${contador.getCount()}`;
+        let llave_izquierda = `n${contador.getCount()}`;
+        let instrucciones_raiz = `n${contador.getCount()}`;
+        for(let i = 0; i < this.bloque.length; i++){
+            lista_instrucciones.push(`n${contador.getCount()}`);
+        }
+        let llave_derecha = `n${contador.getCount()}`;
+        dot += `${raiz}[label="CICLO FOR"];\n`;
+        dot += `${instruccion_for}[label="CICLO"];\n`;
+        dot += `${parentesis_izquierdo}[label="("];\n`;
+        dot += `${declaracion}[label="EXPRESION"];\n`;
+        dot += `${condicion_for}[label="CONDICION"];\n`; 
+        dot += `${actualizacion}[label="EXPRESION"];\n`;
+        dot += `${parentesis_derecho}[label=")"];\n`;
+        dot += `${llave_izquierda}[label="{"];\n`;
+        dot += `${instrucciones_raiz}[label="INSTRUCCIONES"];\n`;
+        for(let i = 0; i < lista_instrucciones.length; i++){
+            dot += ` ${lista_instrucciones[i]}[label="INSTRUCCION"];\n`;
+        }
+        dot += `${llave_derecha}[label="}"];\n`;
+        dot += `${anterior} -> ${raiz};\n`;
+        dot += `${raiz} -> ${instruccion_for};\n`;
+        dot += `${raiz} -> ${parentesis_izquierdo};\n`;
+        dot += `${raiz} -> ${declaracion};\n`;
+        dot += `${raiz} -> ${condicion_for};\n`;
+        dot += `${raiz} -> ${actualizacion};\n`;
+        dot += `${raiz} -> ${parentesis_derecho};\n`;
+        dot += `${raiz} -> ${llave_izquierda};\n`;
+        dot += `${raiz} -> ${instrucciones_raiz};\n`;
+        for(let i = 0; i < lista_instrucciones.length; i++){
+            dot += `${instrucciones_raiz} -> ${lista_instrucciones[i]};\n`;
+        }
+        dot += `${raiz} -> ${llave_derecha};\n`;
+        dot += this.declaracion.obtener_ast(declaracion);
+        dot += this.condicion.obtener_ast(condicion_for);
+        dot += this.actualizacion.obtener_ast(actualizacion);
+        for(let i = 0; i < lista_instrucciones.length; i++){
+            dot += this.bloque[i].obtener_ast(lista_instrucciones[i]);
+        }
+        return dot;
     }
 }

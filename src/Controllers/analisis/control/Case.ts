@@ -3,6 +3,7 @@ import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
 import Simbolo from "../simbolo/Simbolo";
+import Singleton from "../simbolo/singleton";
 import TablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "../Transferencia.ts/Break";
@@ -61,6 +62,34 @@ export default class Case extends Instruccion {
         return this.condicion
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia();
+        let dot = "";
+        let instruccion_case = `n${contador.getCount()}`;
+        let expresion = `n${contador.getCount()}`;
+        let dos_puntos = `n${contador.getCount()}`;
+        let raiz = `n${contador.getCount()}`;
+        let lista_instrucciones = [];
+        for (let i = 0; i < this.instrucciones.length; i++) {
+            lista_instrucciones.push(`n${contador.getCount()}`);
+        }
+        dot += `${instruccion_case}[label="CASE"];\n`;
+        dot += `${expresion}[label="EXPRESION"];\n`;
+        dot += `${dos_puntos}[label=":"];\n`;
+        dot += `${raiz}[label="INSTRUCCIONES"];\n`;
+        for (let i = 0; i < this.instrucciones.length; i++) {
+            dot += `${lista_instrucciones[i]}[label="INSTRUCCION"];\n`;
+        }
+        dot += `${anterior} -> ${instruccion_case};\n`;
+        dot += `${anterior} -> ${expresion};\n`;
+        dot += `${anterior} -> ${dos_puntos};\n`;
+        dot += `${anterior} -> ${raiz};\n`;
+        for (let i = 0; i < this.instrucciones.length; i++) {
+            dot += `${raiz} -> ${lista_instrucciones[i]};\n`;
+        }
+        dot += this.condicion.obtener_ast(expresion);
+        for (let i = 0; i < this.instrucciones.length; i++) {
+            dot += this.instrucciones[i].obtener_ast(lista_instrucciones[i]);
+        }
+        return dot;
     }
 }

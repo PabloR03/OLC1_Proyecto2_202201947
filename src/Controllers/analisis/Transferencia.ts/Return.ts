@@ -1,6 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
 import Arbol from "../simbolo/Arbol";
+import Singleton from "../simbolo/singleton";
 import tablaSimbolo from "../simbolo/tablaSimbolos";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
 
@@ -22,6 +23,24 @@ export default class Return extends Instruccion{
         return this;
     }
     obtener_ast(anterior: string): string {
-        return ""
+        let contador = Singleton.getInstancia()
+        let dot = ""
+        let retorno = `n${contador.getCount()}`
+        let expresion = `n${contador.getCount()}`
+        let punto_coma = `n${contador.getCount()}`
+        dot += `${retorno}[label="RETURN"];\n`
+        if(this.expresion != undefined){
+            dot += `${expresion}[label="EXPRESION"];\n`
+        }
+        dot += `${punto_coma}[label=";"];\n`
+        dot += `${anterior} -> ${retorno};\n`
+        if(this.expresion != undefined){
+            dot += `${anterior} -> ${expresion};\n`
+        }
+        dot += `${anterior} -> ${punto_coma};\n`
+        if(this.expresion != undefined){
+            dot += this.expresion.obtener_ast(expresion)
+        }
+        return dot
     }
 }

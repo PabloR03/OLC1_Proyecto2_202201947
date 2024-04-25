@@ -17,9 +17,9 @@ export default class Nativo extends Instruccion {
         return this.valor
     }
     obtener_ast(anterior: string): string {
-        let contador = Singleton.getInstancia()
-        let nodoNativo = `n${contador.get()}`
-        let nodoValor = `n${contador.get()}`
+        let cc = Singleton.getInstancia()
+        let nodoNativo = `n${cc.getCount()}`
+        let nodoValor = `n${cc.getCount()}`
         let resultado = `${nodoNativo}[label=\"NATIVO\"];\n`
         resultado += `${nodoValor}[label=\"${this.valor}\"];\n`
         resultado += `${nodoNativo}->${nodoValor};\n`

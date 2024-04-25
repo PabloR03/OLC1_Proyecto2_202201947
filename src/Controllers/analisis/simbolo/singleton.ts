@@ -13,7 +13,7 @@ export default class Singleton {
         return Singleton.instancia
     }
 
-    get() {
+    getCount() {
         this.contador++
         return this.contador
     }

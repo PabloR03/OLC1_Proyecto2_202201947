@@ -79,7 +79,30 @@ function App() {
       .catch((error) => {
         alert("Exitazo total tambla simbolos")
         console.error('Error:', error);
-      });
+      });  
+    }
+      function rarbolast() {
+        var entrada = editorRef.current.getValue();
+        fetch('http://localhost:4000/arbolast', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ entrada: editorRef.current.getValue() }),
+        })
+          .then(response => response.blob())
+          .then(blob => {
+    
+            const url = window.URL.createObjectURL(blob);
+            const   a = document.createElement('a');
+            a.href = url;
+            a.download = 'ARBOL_AST.pdf';
+            a.click();
+          })
+          .catch((error) => {
+            alert("Exitazo total tambla simbolos")
+            console.error('Error:', error);
+          });
   }
 
 
@@ -170,7 +193,7 @@ function App() {
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton2">
                   <li><a className="dropdown-item" href="#" onClick={reporteErrores}>Reporte de Errores</a></li>
-                  <li><a className="dropdown-item" href="#">Generar Arbol AST</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={rarbolast}>Generar Arbol AST</a></li>
                   <li><a className="dropdown-item" href="#" onClick={reporteSimbolos}>Reporte Tabla de Simbolos</a></li>
                 </ul>
               </div>
