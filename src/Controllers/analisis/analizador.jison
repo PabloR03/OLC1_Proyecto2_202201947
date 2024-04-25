@@ -35,6 +35,8 @@ const DeclaracionA              = require('./dimenciones/DeclaracionA')
 const AccesoA                   = require('./dimenciones/AccesoA')
 const AsignacionA               = require('./dimenciones/AsignacionArreglo')
 const DeclaracionACSTR          = require('./dimenciones/DeclaracionACSTR')
+const Errores                   = require('./excepciones/Errores')
+const indexController           = require('../indexController')
 
 //const Metodoso                  = require('./instrucciones/Metodoso')
 //const Llamadoso                 = require('./instrucciones/Llamadoso')
@@ -143,10 +145,11 @@ const DeclaracionACSTR          = require('./dimenciones/DeclaracionACSTR')
 
 <<EOF>>                     return 'EOF'
 
+.       {
+        let error = new Errores.default("Error Lexico", ("Caracter desconocido: " + yytext), yylloc.first_line, yylloc.first_column);
+        indexController.lista_errores.push(error);
+}
 
-%{
-
-%}
 
 /lex
 
@@ -186,6 +189,7 @@ instruccion : declaracion_vars  PYC   { $$=$1; }
                 | execute   PYC       { $$=$1; }
                 | llamada PYC         { $$=$1; }
                 | retunrs PYC         { $$=$1; }
+                | error               { let error = new Errores.default("Error Sintactico", ("Error en la gramatica "+$1), @1.first_line, @1.first_column); indexController.lista_errores.push(error); }
                 // | expresion PYC       { $$=$1; }
 ;
 
@@ -253,6 +257,8 @@ expresion : ENTERO         { $$ = new Nativo.default(new Tipo.default(Tipo.tipoD
                 | ID CORCHETEIZQ expresion CORCHETEDER CORCHETEIZQ expresion CORCHETEDER { $$ = new AccesoM.default($1, @1.first_line, @1.first_column, $3, $6); }
                 | ID CORCHETEIZQ expresion CORCHETEDER                                   { $$ = new AccesoA.default($1, @1.first_line, @1.first_column, $3); }
                 | llamada                                        { $$=$1; }
+                | error               { let error = new Errores.default("Error Sintactico", ("Error en la gramatica "+$1), @1.first_line, @1.first_column); indexController.lista_errores.push(error); }
+
 
 ;
 

@@ -27,6 +27,7 @@ class controller {
 
     public interpretar(req: Request, res: Response) {
         try {
+            lista_errores = new Array<Errores>()
             let parser = require('./analisis/analizador')
             let ast = new Arbol(parser.parse(req.body.entrada))
             let tabla = new tablaSimbolo()
@@ -59,6 +60,12 @@ class controller {
                 if (i instanceof Execute){
                     execute = i
                 }
+                if (i instanceof Errores){
+                    ast.agregarError(i)
+                }
+                for (let i of lista_errores){
+                    ast.setConsola(i.getTipoError()+": "+ i.getDescripcion()+ "\n")
+                }
             }
             
             if(execute != null){
@@ -77,16 +84,44 @@ class controller {
     public rerrores(req: Request, res: Response) {
         try {
             let parser = require('./analisis/analizador')
-            let ArbolAst = new Arbol(parser.parse(req.body.entrada))
+            let ast = new Arbol(parser.parse(req.body.entrada))
             let Tabla_Simbolos = new tablaSimbolo()
             Tabla_Simbolos.setNombre("Tabla Global")
-            ArbolAst.setTablaGlobal(Tabla_Simbolos)
-            ArbolAst.agregarTabla(Tabla_Simbolos)
-            ArbolAst.setConsola("")
-            for (let i of ArbolAst.getInstrucciones()) {
-                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
+            ast.setTablaGlobal(Tabla_Simbolos)
+            ast.agregarTabla(Tabla_Simbolos)
+            let execute = null
+            for (let i of ast.getInstrucciones()) {
+                if (i instanceof Metodo) {
+                    i.id = i.id.toLocaleLowerCase()
+                    ast.addFunciones(i)
+                }
+                if(i instanceof Declaracion){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof DeclaracionArreglo){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof DeclaracionMatriz){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof Execute){
+                    execute = i
+                }
+                if (i instanceof Errores){
+                    ast.agregarError(i)
+                }
+                for (let i of lista_errores){
+                    let error = new Errores(i.getTipoError().toString(),  i.getDescripcion().toString(), i.getFila(), i.getColumna())
+                    ast.agregarError(error);
+                }
             }
-            ArbolAst.generarReporteErrores()
+            if(execute != null){
+                execute.interpretar(ast, Tabla_Simbolos)
+                if (execute instanceof Errores){
+                    ast.agregarError(execute)
+                }
+            }
+            ast.generarReporteErrores()
             res.sendFile(path.resolve('REPORTE_ERRORES.html'));
         } catch (err: any) {
             console.log(err)
@@ -97,16 +132,40 @@ class controller {
     public rtablasimbolos(req: Request, res: Response) {
         try {
             let parser = require('./analisis/analizador')
-            let ArbolAst = new Arbol(parser.parse(req.body.entrada))
+            let ast = new Arbol(parser.parse(req.body.entrada))
             let Tabla_Simbolos = new tablaSimbolo()
             Tabla_Simbolos.setNombre("Tabla Global")
-            ArbolAst.setTablaGlobal(Tabla_Simbolos)
-            ArbolAst.agregarTabla(Tabla_Simbolos)
-            ArbolAst.setConsola("")
-            for (let i of ArbolAst.getInstrucciones()) {
-                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos)
+            ast.setTablaGlobal(Tabla_Simbolos)
+            ast.agregarTabla(Tabla_Simbolos)
+            let execute = null
+            for (let i of ast.getInstrucciones()) {
+                if (i instanceof Metodo) {
+                    i.id = i.id.toLocaleLowerCase()
+                    ast.addFunciones(i)
+                }
+                if(i instanceof Declaracion){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof DeclaracionArreglo){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof DeclaracionMatriz){
+                    i.interpretar(ast, Tabla_Simbolos)
+                }
+                if (i instanceof Execute){
+                    execute = i
+                }
+                if (i instanceof Errores){
+                    ast.agregarError(i)
+                }
             }
-            ArbolAst.generarReporteTablas()
+            if(execute != null){
+                execute.interpretar(ast, Tabla_Simbolos)
+                if (execute instanceof Errores){
+                    ast.agregarError(execute)
+                }
+            }
+            ast.generarReporteTablas()
             res.sendFile(path.resolve('TABLA_SIMBOLOS.html'));
         } catch (err: any) {
             console.log(err)
@@ -118,11 +177,11 @@ class controller {
         try {
             ast_dot=""
             let parser = require('./analisis/analizador')
-            let Arbol_Ast = new Arbol(parser.parse(req.body.entrada))
-            let Nueva_Tabla = new tablaSimbolo()
-            Nueva_Tabla.setNombre("Tabla Global")
-            Arbol_Ast.setTablaGlobal(Nueva_Tabla)
-            Arbol_Ast.agregarTabla(Nueva_Tabla)
+            let ast = new Arbol(parser.parse(req.body.entrada))
+            let tabla = new tablaSimbolo()
+            tabla.setNombre("Tabla Global")
+            ast.setTablaGlobal(tabla)
+            ast.agregarTabla(tabla)
             
             let contador = Singleton.getInstancia()
             let dot = "digraph ast{\n"
@@ -133,7 +192,7 @@ class controller {
             dot += "nINICIO[label=\"INICIO\"];\n"
             dot += "nINSTRUCCIONES[label=\"INSTRUCCIONES\"];\n"
             dot += "nINICIO->nINSTRUCCIONES;\n"
-            for (let i of Arbol_Ast.getInstrucciones()) {
+            for (let i of ast.getInstrucciones()) {
                 if (i instanceof Errores) continue
                 let nodo = `n${contador.getCount()}`
                 dot += `${nodo}[label=\"INSTRUCCION\"];\n`

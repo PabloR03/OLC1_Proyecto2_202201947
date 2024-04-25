@@ -80,21 +80,21 @@ export default class Declaracion extends Instruccion {
         let valor = `n${contador.getCount()}`;
         let punto_coma = `n${contador.getCount()}`;
     
-        dot += `${declaracion}[label="DECLARACION" color = \"#00cb95\"];\n`
+        dot += `${declaracion}[label="DECLARACION"];\n`
         if(this.tipoDato.getTipo() == tipoDato.ENTERO){
-            dot += `${tipo_id}[label="ENTERO" color = \"#00cb95\"];\n`
+            dot += `${tipo_id}[label="ENTERO"];\n`
         }else if(this.tipoDato.getTipo() == tipoDato.DECIMAL){
-            dot += `${tipo_id}[label="DOBLE" color = \"#00cb95\"];\n`
+            dot += `${tipo_id}[label="DOBLE"];\n`
         }else if(this.tipoDato.getTipo() == tipoDato.BOOL){
-            dot += `${tipo_id}[label="BOOLEANO" color = \"#00cb95\"];\n`
+            dot += `${tipo_id}[label="BOOLEANO"];\n`
         }else if(this.tipoDato.getTipo() == tipoDato.CADENA){
-            dot += `${tipo_id}[label="CADENA" color = \"#00cb95\"];\n`
+            dot += `${tipo_id}[label="CADENA"];\n`
         }else if(this.tipoDato.getTipo() == tipoDato.CARACTER){
-            dot += `${tipo_id}[label="CARACTER" color = \"#00cb95\"];\n`
+            dot += `${tipo_id}[label="CARACTER"];\n`
         }
-        dot += `${id}[label="ID" color = \"#00cb95\"];\n`
+        dot += `${id}[label="ID"];\n`
         for(let i= 0; i < this.identificador.length; i++){
-            dot += `${lista_id[i]} [label = "${this.identificador[i]}" color = \"#00cb95\"];\n`
+            dot += `${lista_id[i]} [label = "${this.identificador[i]}"];\n`
         }
         dot += `${anterior} -> ${declaracion};\n`
         dot += `${declaracion} -> ${id};\n`
@@ -103,13 +103,13 @@ export default class Declaracion extends Instruccion {
             dot += `${id} -> ${lista_id[i]};\n`
         }
         if (this.valor != null) {
-            dot += `${igual}[label="=" color = \"#00cb95\"];\n`
-            dot += `${valor}[label="EXPRESION" color = \"#00cb95\"];\n`
+            dot += `${igual}[label="="];\n`
+            dot += `${valor}[label="EXPRESION"];\n`
             dot += `${declaracion} -> ${igual};\n`
             dot += `${declaracion} -> ${valor};\n`
             dot += this.valor.obtener_ast(valor);
         }
-        dot += `${punto_coma}[label=";" color = \"#00cb95\"];\n`
+        dot += `${punto_coma}[label=";"];\n`
         dot += `${declaracion} -> ${punto_coma};\n`
         return dot;
     }

@@ -48,6 +48,7 @@ class controller {
     }
     interpretar(req, res) {
         try {
+            exports.lista_errores = new Array();
             let parser = require('./analisis/analizador');
             let ast = new Arbol_1.default(parser.parse(req.body.entrada));
             let tabla = new tablaSimbolos_1.default();
@@ -80,6 +81,12 @@ class controller {
                 if (i instanceof execute_1.default) {
                     execute = i;
                 }
+                if (i instanceof Errores_1.default) {
+                    ast.agregarError(i);
+                }
+                for (let i of exports.lista_errores) {
+                    ast.setConsola(i.getTipoError() + ": " + i.getDescripcion() + "\n");
+                }
             }
             if (execute != null) {
                 console.log("Ejecutando funcion");
@@ -97,16 +104,44 @@ class controller {
     rerrores(req, res) {
         try {
             let parser = require('./analisis/analizador');
-            let ArbolAst = new Arbol_1.default(parser.parse(req.body.entrada));
+            let ast = new Arbol_1.default(parser.parse(req.body.entrada));
             let Tabla_Simbolos = new tablaSimbolos_1.default();
             Tabla_Simbolos.setNombre("Tabla Global");
-            ArbolAst.setTablaGlobal(Tabla_Simbolos);
-            ArbolAst.agregarTabla(Tabla_Simbolos);
-            ArbolAst.setConsola("");
-            for (let i of ArbolAst.getInstrucciones()) {
-                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos);
+            ast.setTablaGlobal(Tabla_Simbolos);
+            ast.agregarTabla(Tabla_Simbolos);
+            let execute = null;
+            for (let i of ast.getInstrucciones()) {
+                if (i instanceof metodo_1.default) {
+                    i.id = i.id.toLocaleLowerCase();
+                    ast.addFunciones(i);
+                }
+                if (i instanceof Declaracion_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof DeclaracionA_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof DeclaracionM_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof execute_1.default) {
+                    execute = i;
+                }
+                if (i instanceof Errores_1.default) {
+                    ast.agregarError(i);
+                }
+                for (let i of exports.lista_errores) {
+                    let error = new Errores_1.default(i.getTipoError().toString(), i.getDescripcion().toString(), i.getFila(), i.getColumna());
+                    ast.agregarError(error);
+                }
             }
-            ArbolAst.generarReporteErrores();
+            if (execute != null) {
+                execute.interpretar(ast, Tabla_Simbolos);
+                if (execute instanceof Errores_1.default) {
+                    ast.agregarError(execute);
+                }
+            }
+            ast.generarReporteErrores();
             res.sendFile(path_1.default.resolve('REPORTE_ERRORES.html'));
         }
         catch (err) {
@@ -117,16 +152,40 @@ class controller {
     rtablasimbolos(req, res) {
         try {
             let parser = require('./analisis/analizador');
-            let ArbolAst = new Arbol_1.default(parser.parse(req.body.entrada));
+            let ast = new Arbol_1.default(parser.parse(req.body.entrada));
             let Tabla_Simbolos = new tablaSimbolos_1.default();
             Tabla_Simbolos.setNombre("Tabla Global");
-            ArbolAst.setTablaGlobal(Tabla_Simbolos);
-            ArbolAst.agregarTabla(Tabla_Simbolos);
-            ArbolAst.setConsola("");
-            for (let i of ArbolAst.getInstrucciones()) {
-                var resultado = i.interpretar(ArbolAst, Tabla_Simbolos);
+            ast.setTablaGlobal(Tabla_Simbolos);
+            ast.agregarTabla(Tabla_Simbolos);
+            let execute = null;
+            for (let i of ast.getInstrucciones()) {
+                if (i instanceof metodo_1.default) {
+                    i.id = i.id.toLocaleLowerCase();
+                    ast.addFunciones(i);
+                }
+                if (i instanceof Declaracion_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof DeclaracionA_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof DeclaracionM_1.default) {
+                    i.interpretar(ast, Tabla_Simbolos);
+                }
+                if (i instanceof execute_1.default) {
+                    execute = i;
+                }
+                if (i instanceof Errores_1.default) {
+                    ast.agregarError(i);
+                }
             }
-            ArbolAst.generarReporteTablas();
+            if (execute != null) {
+                execute.interpretar(ast, Tabla_Simbolos);
+                if (execute instanceof Errores_1.default) {
+                    ast.agregarError(execute);
+                }
+            }
+            ast.generarReporteTablas();
             res.sendFile(path_1.default.resolve('TABLA_SIMBOLOS.html'));
         }
         catch (err) {
@@ -138,11 +197,11 @@ class controller {
         try {
             ast_dot = "";
             let parser = require('./analisis/analizador');
-            let Arbol_Ast = new Arbol_1.default(parser.parse(req.body.entrada));
-            let Nueva_Tabla = new tablaSimbolos_1.default();
-            Nueva_Tabla.setNombre("Tabla Global");
-            Arbol_Ast.setTablaGlobal(Nueva_Tabla);
-            Arbol_Ast.agregarTabla(Nueva_Tabla);
+            let ast = new Arbol_1.default(parser.parse(req.body.entrada));
+            let tabla = new tablaSimbolos_1.default();
+            tabla.setNombre("Tabla Global");
+            ast.setTablaGlobal(tabla);
+            ast.agregarTabla(tabla);
             let contador = singleton_1.default.getInstancia();
             let dot = "digraph ast{\n";
             dot += "node [\n";
@@ -152,7 +211,7 @@ class controller {
             dot += "nINICIO[label=\"INICIO\"];\n";
             dot += "nINSTRUCCIONES[label=\"INSTRUCCIONES\"];\n";
             dot += "nINICIO->nINSTRUCCIONES;\n";
-            for (let i of Arbol_Ast.getInstrucciones()) {
+            for (let i of ast.getInstrucciones()) {
                 if (i instanceof Errores_1.default)
                     continue;
                 let nodo = `n${contador.getCount()}`;

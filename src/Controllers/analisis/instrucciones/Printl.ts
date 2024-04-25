@@ -28,12 +28,12 @@ export default class Printl extends Instruccion {
         let menor_menor2 = `n${contador.getCount()}`;
         let endl = `n${contador.getCount()}`;
         let punto_coma = `n${contador.getCount()}`;
-        dot += `${cout}[label="cout" color = \"#026994\"];\n`;
-        dot += `${menor_menor1}[label="<<" color = \"#026994\"];\n`;
-        dot += `${expresion_node}[label="EXPRESION" color = \"#026994\"];\n`;
-        dot += `${menor_menor2}[label="<<" color = \"#026994\"];\n`;
-        dot += `${endl}[label="endl" color = \"#026994\"];\n`;
-        dot += `${punto_coma}[label=";" color = \"#026994\"];\n`;
+        dot += `${cout}[label="cout"];\n`;
+        dot += `${menor_menor1}[label="<<"];\n`;
+        dot += `${expresion_node}[label="EXPRESION"];\n`;
+        dot += `${menor_menor2}[label="<<"];\n`;
+        dot += `${endl}[label="endl"];\n`;
+        dot += `${punto_coma}[label=";"];\n`;
         dot += `${anterior} -> ${cout};\n`;
         dot += `${anterior} -> ${menor_menor1};\n`;
         dot += `${anterior} -> ${expresion_node};\n`;

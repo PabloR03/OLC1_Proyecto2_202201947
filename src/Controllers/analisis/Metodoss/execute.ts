@@ -65,12 +65,12 @@ export default class Execute extends Instruccion {
         }
         let parentesis_derecho = `n${contador.getCount()}`
         let punto_coma = `n${contador.getCount()}`
-        dot += `${execute}[label="EXECUTE" color = \"#37c9c6\"];\n`
-        dot += `${identificador}[label="${this.id}" color = \"#37c9c6\"];\n`
-        dot += `${parentesis_izquierdo}[label="(" color = \"#37c9c6\"];\n`
-        dot += `${lista_parametros}[label="PARAMETROS" color = \"#37c9c6\"];\n`
-        dot += `${parentesis_derecho}[label=")" color = \"#37c9c6\"];\n`
-        dot += `${punto_coma}[label=";" color = \"#37c9c6\"];\n`
+        dot += `${execute}[label="EXECUTE"];\n`
+        dot += `${identificador}[label="${this.id}"];\n`
+        dot += `${parentesis_izquierdo}[label="("];\n`
+        dot += `${lista_parametros}[label="PARAMETROS"];\n`
+        dot += `${parentesis_derecho}[label=")"];\n`
+        dot += `${punto_coma}[label=";"];\n`
         for(let i = 0; i < this.parametros.length; i++){
             dot += `${contador_parametros[i]}[label="EXPRESION" color = \"#37c9c6\"];\n`
         }

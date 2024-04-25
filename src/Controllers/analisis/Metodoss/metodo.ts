@@ -96,46 +96,46 @@ export default class Metodo extends Instruccion {
             lista_instrucciones.push(`n${contador.getCount()}`);
         }
         let llave_derecha = `n${contador.getCount()}`;
-        dot += `${raiz}[label="METODOS" color = \"#9ac1bc\" \n];\n`
+        dot += `${raiz}[label="METODOS" \n];\n`
         if(this.tipo.getTipo() == tipoDato.VOID){
-            dot += `${tipo_funcion}[label="VOID" color = \"#9ac1bc\"];\n`
+            dot += `${tipo_funcion}[label="VOID"];\n`
         }else if(this.tipo.getTipo() == tipoDato.ENTERO){
-            dot += `${tipo_funcion}[label="INT" color = \"#9ac1bc\"];\n`
+            dot += `${tipo_funcion}[label="INT"];\n`
         }else if(this.tipo.getTipo() == tipoDato.DECIMAL){
-            dot += `${tipo_funcion}[label="DOUBLE" color = \"#9ac1bc\"];\n`
+            dot += `${tipo_funcion}[label="DOUBLE"];\n`
         }else if(this.tipo.getTipo() == tipoDato.CADENA){
-            dot += `${tipo_funcion}[label="STRING" color = \"#9ac1bc\"];\n`
+            dot += `${tipo_funcion}[label="STRING"];\n`
         }else if(this.tipo.getTipo() == tipoDato.BOOL){
-            dot += `${tipo_funcion}[label="BOOLE" color = \"#9ac1bc\"];\n`
+            dot += `${tipo_funcion}[label="BOOLE"];\n`
         }
-        dot += `${raiz_identificador}[label="ID" color = \"#9ac1bc\"];\n`
+        dot += `${raiz_identificador}[label="ID"];\n`
         dot += `${identificador}[label="${this.id}"];\n`
-        dot += `${parentesis_izquierdo}[label="(" color = \"#9ac1bc\"];\n`
-        dot += `${parametros}[label="PARAMETROS" color = \"#9ac1bc\"];\n`
+        dot += `${parentesis_izquierdo}[label="("];\n`
+        dot += `${parametros}[label="PARAMETROS"];\n`
         for(let i = 0; i < this.parametros.length; i++){
             if(this.parametros[i].tipo.getTipo() == tipoDato.ENTERO){
-                dot += `${lista_tipo_parametro[i]}[label="INT" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="INT"];\n`
             }else if(this.parametros[i].tipo.getTipo() == tipoDato.DECIMAL){
-                dot += `${lista_tipo_parametro[i]}[label="DOUBLE" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="DOUBLE"];\n`
             }else if(this.parametros[i].tipo.getTipo() == tipoDato.CADENA){
-                dot += `${lista_tipo_parametro[i]}[label="STRING" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="STRING"];\n`
             }else if(this.parametros[i].tipo.getTipo() == tipoDato.BOOL){
-                dot += `${lista_tipo_parametro[i]}[label="BOOLE" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="BOOLE"];\n`
             }else if(this.parametros[i].tipo.getTipo() == tipoDato.VOID){
-                dot += `${lista_tipo_parametro[i]}[label="VOID" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="VOID"];\n`
             }else if(this.parametros[i].tipo.getTipo() == tipoDato.CARACTER){
-                dot += `${lista_tipo_parametro[i]}[label="CHAR" color = \"#9ac1bc\"];\n`
+                dot += `${lista_tipo_parametro[i]}[label="CHAR"];\n`
             }
             
-            dot += `${lista_parametros[i]}[label="${this.parametros[i].id}" color = \"#9ac1bc\"];\n`
+            dot += `${lista_parametros[i]}[label="${this.parametros[i].id}"];\n`
         }
-        dot += `${parentesis_derecho}[label=")" color = \"#9ac1bc\"];\n`
-        dot += `${llave_izquierda}[label="{" color = \"#9ac1bc\"];\n`
-        dot += `${raiz_instrucciones}[label="INSTRUCCIONES" color = \"#9ac1bc\"];\n`
+        dot += `${parentesis_derecho}[label=")"];\n`
+        dot += `${llave_izquierda}[label="{"];\n`
+        dot += `${raiz_instrucciones}[label="INSTRUCCIONES"];\n`
         for(let i = 0; i < this.instrucciones.length; i++){
-            dot += `${lista_instrucciones[i]}[label="INSTRUCCION" color = \"#9ac1bc\"];\n`
+            dot += `${lista_instrucciones[i]}[label="INSTRUCCION"];\n`
         }
-        dot += `${llave_derecha}[label="}" color = \"#9ac1bc\"];\n`
+        dot += `${llave_derecha}[label="}"];\n`
         dot += `${raiz} -> ${tipo_funcion};\n`
         dot += `${raiz} -> ${raiz_identificador};\n`
         dot += `${raiz_identificador} -> ${identificador};\n`
